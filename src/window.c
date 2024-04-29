@@ -1,42 +1,48 @@
 #include "window.h"
 #include "player.h"
 #include <stdio.h>
+#include <stdbool.h>
+
+bool isWClicked = false;
+bool isSClicked = false;
+bool isDClicked = false;
+bool isAClicked = false;
 
 void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     if (action == GLFW_RELEASE) {
         if (key == GLFW_KEY_W) {
-            playerForwardForce = 0.0;
+            isWClicked = false;
         }
 
         if (key == GLFW_KEY_S) {
-            playerForwardForce = 0.0;
+            isSClicked = false;
         }
 
         if (key == GLFW_KEY_D) {
-            playerSidewayForce = 0.0;
+            isDClicked = false;
         }
 
         if (key == GLFW_KEY_A) {
-            playerSidewayForce = 0.0;
+            isAClicked = false;
         }
     }
 
     if (action == GLFW_PRESS) {
         if (key == GLFW_KEY_W) {
-            playerForwardForce = 1.0;
+            isWClicked = true;
         }
 
         if (key == GLFW_KEY_S) {
-            playerForwardForce = -1.0;
+            isSClicked = true;
         }
 
         if (key == GLFW_KEY_D) {
-            playerSidewayForce = 1.0;
+            isDClicked = true;
         }
 
         if (key == GLFW_KEY_A) {
-            playerSidewayForce = -1.0;
+            isAClicked = true;
         }
 
         if (key == GLFW_KEY_ESCAPE) {
@@ -44,6 +50,24 @@ void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int actio
         }
     }
 
+    playerForwardForce = 0.0;
+    playerSidewayForce = 0.0;
+
+    if (isWClicked) {
+        playerForwardForce += 1.0;
+    }
+
+    if (isSClicked) {
+        playerForwardForce -= 1.0;
+    }
+
+    if (isDClicked) {
+        playerSidewayForce += 1.0;
+    }
+
+    if (isAClicked) {
+        playerSidewayForce -= 1.0;
+    }
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int x, int y) {

@@ -1,7 +1,7 @@
 #include "player.h"
 
 double playerPositionX = 5.0;
-double playerPositionY = 1.5;
+double playerPositionY = 2.0;
 double playerPositionZ = 5.0;
 
 double speed = 0.0;
