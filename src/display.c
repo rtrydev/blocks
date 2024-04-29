@@ -1,9 +1,13 @@
 #include "display.h"
 #include "cube.h"
+#include "player.h"
 #include <GL/glu.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+
+double PI = 3.14159265359;
+double EPSILON = 0.0001;
 
 void processViewRotationDelta(
     double deltaX, double deltaY,
@@ -15,11 +19,32 @@ void processViewRotationDelta(
     double y = deltaY / rotationFactor;
 
     double longitude = x;
-    double latitude = 2 * atan(exp(y)) - 3.14159265359 / 2.0;
+    double latitude = 2 * atan(exp(y)) - PI / 2.0;
 
     *lookAtX = cos(latitude) * cos(longitude);
     *lookAtY = -sin(latitude);
     *lookAtZ = cos(latitude) * sin(longitude);
+}
+
+void processPlayerPositionChange(
+    double lookAtX, double lookAtY, double lookAtZ
+) {
+    double forceVectorLength = sqrt(
+        pow(playerForwardForce, 2) + pow(playerSidewayForce, 2)
+    );
+
+    if (forceVectorLength < EPSILON) {
+        return;
+    }
+
+    double normalizedForward = playerForwardForce / forceVectorLength;
+    double normalizedSideway = playerSidewayForce / forceVectorLength;
+
+    playerPositionX += normalizedForward * lookAtX * 0.005;
+    playerPositionZ += normalizedForward * lookAtZ * 0.005;
+
+    playerPositionX += normalizedSideway * (lookAtX * cos(PI / 2.0) - lookAtZ * sin(PI / 2.0)) * 0.005;
+    playerPositionZ += normalizedSideway * (lookAtX * sin(PI / 2.0) + lookAtZ * cos(PI / 2.0)) * 0.005;
 }
 
 void processDisplayLoop(GLFWwindow* window) {
@@ -73,18 +98,17 @@ void processDisplayLoop(GLFWwindow* window) {
 
         glfwGetCursorPos(window, &currentMouseX, &currentMouseY);
 
-        double positionX = 5.0;
-        double positionY = 1.5;
-        double positionZ = 5.0;
-
         processViewRotationDelta(
             currentMouseX - startX + xPositionOffset, currentMouseY - startY + yPositionOffset,
             &lookAtX, &lookAtY, &lookAtZ
         );
+        processPlayerPositionChange(
+            lookAtX, lookAtY, lookAtZ
+        );
 
         gluLookAt(
-            positionX, positionY, positionZ,
-            lookAtX + positionX, lookAtY + positionY, lookAtZ + positionZ,
+            playerPositionX, playerPositionY, playerPositionZ,
+            lookAtX + playerPositionX, lookAtY + playerPositionY, lookAtZ + playerPositionZ,
             0, 1, 0
         );
 

@@ -1,11 +1,49 @@
 #include "window.h"
+#include "player.h"
 #include <stdio.h>
 
 void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    if(action == GLFW_PRESS)
-        if(key == GLFW_KEY_ESCAPE)
+    if (action == GLFW_RELEASE) {
+        if (key == GLFW_KEY_W) {
+            playerForwardForce = 0.0;
+        }
+
+        if (key == GLFW_KEY_S) {
+            playerForwardForce = 0.0;
+        }
+
+        if (key == GLFW_KEY_D) {
+            playerSidewayForce = 0.0;
+        }
+
+        if (key == GLFW_KEY_A) {
+            playerSidewayForce = 0.0;
+        }
+    }
+
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_W) {
+            playerForwardForce = 1.0;
+        }
+
+        if (key == GLFW_KEY_S) {
+            playerForwardForce = -1.0;
+        }
+
+        if (key == GLFW_KEY_D) {
+            playerSidewayForce = 1.0;
+        }
+
+        if (key == GLFW_KEY_A) {
+            playerSidewayForce = -1.0;
+        }
+
+        if (key == GLFW_KEY_ESCAPE) {
             glfwSetWindowShouldClose(window, GL_TRUE);
+        }
+    }
+
 }
 
 void mouseButtonCallback(GLFWwindow* window, int button, int x, int y) {
@@ -16,7 +54,7 @@ void cursorPositionCallback(GLFWwindow* window, double x, double y) {
 
 GLFWwindow* initWindow(const int width, const int height)
 {
-    if(!glfwInit())
+    if (!glfwInit())
     {
         fprintf(stderr, "Failed to initialize GLFW\n");
         return NULL;
@@ -25,7 +63,7 @@ GLFWwindow* initWindow(const int width, const int height)
 
     GLFWwindow* window = glfwCreateWindow(width, height, "Blocks", NULL, NULL);
 
-    if(window == NULL)
+    if (window == NULL)
     {
         fprintf(stderr, "Failed to open GLFW window.\n");
         glfwTerminate();

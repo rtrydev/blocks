@@ -4,7 +4,7 @@ CFLAGS = -pthread -Wall -O3
 
 LIBS = -lglfw -lGLU -lGL -lXrandr -lXxf86vm -lXi -lXinerama -lX11 -lrt -ldl -lm
 
-SRCS = src/main.c src/cube.c src/window.c src/display.c
+SRCS = src/main.c src/cube.c src/window.c src/display.c src/player.c
 
 OUTPUT = blocks
 
