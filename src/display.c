@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
 
 #if defined(__APPLE__)
 #include <OpenGL/glu.h>
@@ -13,6 +14,10 @@
 
 double PI = 3.14159265359;
 double EPSILON = 0.0001;
+double DELTA_TIME_FACTOR = 100000.0;
+
+long deltaTime = -1;
+long previousTime = -1;
 
 void processViewRotationDelta(
     double deltaX, double deltaY,
@@ -34,6 +39,18 @@ void processViewRotationDelta(
 void processPlayerPositionChange(
     double lookAtX, double lookAtY, double lookAtZ
 ) {
+    struct timespec timeFetch;
+    clock_gettime(CLOCK_MONOTONIC, &timeFetch);
+
+    long currentTime = timeFetch.tv_sec * 1000 * 1000 + timeFetch.tv_nsec / 1000;
+
+    if (previousTime == -1) {
+        previousTime = currentTime;
+    }
+
+    deltaTime = currentTime - previousTime;
+    previousTime = currentTime;
+
     double forceVectorLength = sqrt(
         pow(playerForwardForce, 2) + pow(playerSidewayForce, 2)
     );
@@ -45,11 +62,11 @@ void processPlayerPositionChange(
     double normalizedForward = playerForwardForce / forceVectorLength;
     double normalizedSideway = playerSidewayForce / forceVectorLength;
 
-    playerPositionX += normalizedForward * lookAtX * 0.005;
-    playerPositionZ += normalizedForward * lookAtZ * 0.005;
+    playerPositionX += normalizedForward * lookAtX * deltaTime / DELTA_TIME_FACTOR;
+    playerPositionZ += normalizedForward * lookAtZ * deltaTime / DELTA_TIME_FACTOR;
 
-    playerPositionX += normalizedSideway * (lookAtX * cos(PI / 2.0) - lookAtZ * sin(PI / 2.0)) * 0.005;
-    playerPositionZ += normalizedSideway * (lookAtX * sin(PI / 2.0) + lookAtZ * cos(PI / 2.0)) * 0.005;
+    playerPositionX += normalizedSideway * (lookAtX * cos(PI / 2.0) - lookAtZ * sin(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+    playerPositionZ += normalizedSideway * (lookAtX * sin(PI / 2.0) + lookAtZ * cos(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
 }
 
 void processDisplayLoop(GLFWwindow* window) {

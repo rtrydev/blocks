@@ -102,6 +102,7 @@ GLFWwindow* initWindow(const int width, const int height)
     glfwSetKeyCallback(window, keyboardButtonCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
+    glfwSwapInterval(0);
 
     printf("Renderer: %s\n", glGetString(GL_RENDERER));
     printf("OpenGL version supported %s\n", glGetString(GL_VERSION));
