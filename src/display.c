@@ -59,8 +59,8 @@ void processPlayerPositionChange(
         return;
     }
 
-    double normalizedForward = playerForwardForce / forceVectorLength;
-    double normalizedSideway = playerSidewayForce / forceVectorLength;
+    double normalizedForward = playerSpeed * playerForwardForce / forceVectorLength;
+    double normalizedSideway = playerSpeed * playerSidewayForce / forceVectorLength;
 
     playerPositionX += normalizedForward * lookAtX * deltaTime / DELTA_TIME_FACTOR;
     playerPositionZ += normalizedForward * lookAtZ * deltaTime / DELTA_TIME_FACTOR;
@@ -86,8 +86,8 @@ void processDisplayLoop(GLFWwindow* window) {
     double startX = 0.0;
     double startY = 0.0;
 
-    double xPositionOffset = -876;
-    double yPositionOffset = 79;
+    double xPositionOffset = 0.0;
+    double yPositionOffset = 0.0;
 
     while(!glfwWindowShouldClose(window))
     {
@@ -130,14 +130,22 @@ void processDisplayLoop(GLFWwindow* window) {
         );
 
         gluLookAt(
-            playerPositionX, playerPositionY, playerPositionZ,
-            lookAtX + playerPositionX, lookAtY + playerPositionY, lookAtZ + playerPositionZ,
+            playerPositionX, playerPositionY + playerHeight, playerPositionZ,
+            lookAtX + playerPositionX, lookAtY + playerPositionY + playerHeight, lookAtZ + playerPositionZ,
             0, 1, 0
         );
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
 
-        drawCube();
+        drawCube(2.0, 1.0, 2.0);
+        drawCube(1.0, 1.0, 2.0);
+        drawCube(2.0, 1.0, 3.0);
+        drawCube(2.0, 2.0, 2.0);
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                drawCube((double)i - 5, 0.0, (double)j - 5);
+            }
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
