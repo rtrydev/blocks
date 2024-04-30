@@ -1,5 +1,9 @@
 #include "cube.h"
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 
 void drawCube() {
     GLfloat vertices[] =
@@ -22,7 +26,7 @@ void drawCube() {
         0, 0.2, 0,   0, 0.2, 0,   0, 0.2, 0,   0, 0.2, 0
     };
 
-    GLfloat outlineColors[] = 
+    GLfloat outlineColors[] =
     {
         1, 1, 1,   1, 1, 1,   1, 1, 1,   1, 1, 1,
         1, 1, 1,   1, 1, 1,   1, 1, 1,   1, 1, 1,
@@ -48,7 +52,7 @@ void drawCube() {
     glRotatef(45, 1.0f, 0.0f, 0.0f);
     glRotatef(30, 0.0f, 1.0f, 0.0f);
 
-    glTranslatef(3, -3, -3); 
+    glTranslatef(3, -3, -3);
 
     /* Cleanup states */
     glDisableClientState(GL_COLOR_ARRAY);

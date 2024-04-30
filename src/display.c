@@ -1,10 +1,15 @@
 #include "display.h"
 #include "cube.h"
 #include "player.h"
-#include <GL/glu.h>
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+
+#if defined(__APPLE__)
+#include <OpenGL/glu.h>
+#else
+#include <GL/glu.h>
+#endif
 
 double PI = 3.14159265359;
 double EPSILON = 0.0001;
@@ -80,7 +85,8 @@ void processDisplayLoop(GLFWwindow* window) {
         }
 
         GLint windowWidth, windowHeight;
-        glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+        glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
         // glClearColor(0.5294, 0.8078, 0.9215, 1.0);
