@@ -106,8 +106,7 @@ void processDisplayLoop(GLFWwindow* window) {
         glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
         glViewport(0, 0, windowWidth, windowHeight);
 
-        // glClearColor(0.5294, 0.8078, 0.9215, 1.0);
-        glClearColor(0, 0, 0, 1.0);
+        glClearColor(0.5294, 0.8078, 0.9215, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glMatrixMode(GL_PROJECTION_MATRIX);
