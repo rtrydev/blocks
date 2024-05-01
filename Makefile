@@ -10,7 +10,7 @@ ifeq ($(detected_OS),Darwin)
 endif
 
 ifeq ($(detected_OS),Linux)
-	LIBS := -lglfw -lGLU -lGL -lXrandr -lXxf86vm -lXi -lXinerama -lX11 -lrt -ldl -lm
+	LIBS := -lglfw -lGLU -lGL -lm
 endif
 
 SRCS = src/main.c src/cube.c src/window.c src/display.c src/player.c
