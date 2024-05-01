@@ -1,6 +1,8 @@
 #include "display.h"
 #include "cube.h"
 #include "player.h"
+#include "world.h"
+
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
@@ -22,6 +24,8 @@ double DELTA_TIME_FACTOR = 100000.0;
 long deltaTime = -1;
 long previousTime = -1;
 
+double previousPlayerPositionY;
+
 void processViewRotationDelta(
     double deltaX, double deltaY,
     double* lookAtX, double* lookAtY, double* lookAtZ
@@ -40,7 +44,8 @@ void processViewRotationDelta(
 }
 
 void processPlayerPositionChange(
-    double lookAtX, double lookAtY, double lookAtZ
+    double lookAtX, double lookAtY, double lookAtZ,
+    int**** worldStructure
 ) {
     struct timespec timeFetch;
 
@@ -73,11 +78,26 @@ void processPlayerPositionChange(
     deltaTime = currentTime - previousTime;
     previousTime = currentTime;
 
-    double forceVectorLength = sqrt(pow(playerForwardForce, 2) + pow(playerSidewayForce, 2));
-
-    if (forceVectorLength < EPSILON) {
-        return;
+    if (playerInAir && playerPositionY == previousPlayerPositionY) {
+        playerInAir = false;
+        playerUpForce = -1.0;
     }
+
+    if (!playerInAir && playerPositionY != previousPlayerPositionY) {
+        playerInAir = true;
+    }
+
+    previousPlayerPositionY = playerPositionY;
+
+    if (playerInAir && playerUpForce > -15.0) {
+        playerUpForce -= 0.2 * deltaTime / DELTA_TIME_FACTOR;
+    }
+
+    bool isCollisionX = false;
+    bool isCollisionY = false;
+    bool isCollisionZ = false;
+
+    double forceVectorLength = sqrt(pow(playerForwardForce, 2) + pow(playerSidewayForce, 2));
 
     double normalizedForward = playerSpeed * playerForwardForce / forceVectorLength;
     double normalizedSideway = playerSpeed * playerSidewayForce / forceVectorLength;
@@ -86,11 +106,43 @@ void processPlayerPositionChange(
     double normalizedLookAtX = lookAtX / directionVectorLength;
     double normalizedLookAtZ = lookAtZ / directionVectorLength;
 
-    playerPositionX += normalizedForward * normalizedLookAtX * deltaTime / DELTA_TIME_FACTOR;
-    playerPositionZ += normalizedForward * normalizedLookAtZ * deltaTime / DELTA_TIME_FACTOR;
+    double yDirection = 0.0;
 
-    playerPositionX += normalizedSideway * (normalizedLookAtX * cos(PI / 2.0) - normalizedLookAtZ * sin(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
-    playerPositionZ += normalizedSideway * (normalizedLookAtX * sin(PI / 2.0) + normalizedLookAtZ * cos(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+    if (playerUpForce > EPSILON || playerUpForce < EPSILON) {
+        yDirection = playerUpForce > 0.0 ? 1.0 : -1.0;
+    }
+
+    double xPositionChange = 0.0;
+    double zPositionChange = 0.0;
+
+    if (forceVectorLength > EPSILON) {
+        xPositionChange =
+            normalizedForward * normalizedLookAtX * deltaTime / DELTA_TIME_FACTOR
+            + normalizedSideway * (normalizedLookAtX * cos(PI / 2.0) - normalizedLookAtZ * sin(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+
+        zPositionChange =
+            normalizedForward * normalizedLookAtZ * deltaTime / DELTA_TIME_FACTOR
+            + normalizedSideway * (normalizedLookAtX * sin(PI / 2.0) + normalizedLookAtZ * cos(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+    }
+
+    searchForCollision(
+        playerPositionX, playerPositionY, playerPositionZ,
+        xPositionChange, yDirection, zPositionChange,
+        &isCollisionX, &isCollisionY, &isCollisionZ,
+        worldStructure
+    );
+
+    if (!isCollisionX && forceVectorLength > EPSILON) {
+        playerPositionX += xPositionChange;
+    }
+
+    if (!isCollisionZ && forceVectorLength > EPSILON) {
+        playerPositionZ += zPositionChange;
+    }
+
+    if (!isCollisionY) {
+        playerPositionY += playerSpeed * playerUpForce * deltaTime / DELTA_TIME_FACTOR;
+    }
 }
 
 void processDisplayLoop(GLFWwindow* window) {
@@ -112,6 +164,12 @@ void processDisplayLoop(GLFWwindow* window) {
 
     double xPositionOffset = 0.0;
     double yPositionOffset = 0.0;
+
+    previousPlayerPositionY = playerPositionY;
+    playerUpForce = -1.0;
+
+    int*** world = NULL;
+    generateWorld(&world);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -149,7 +207,8 @@ void processDisplayLoop(GLFWwindow* window) {
             &lookAtX, &lookAtY, &lookAtZ
         );
         processPlayerPositionChange(
-            lookAtX, lookAtY, lookAtZ
+            lookAtX, lookAtY, lookAtZ,
+            &world
         );
 
         gluLookAt(
@@ -160,17 +219,11 @@ void processDisplayLoop(GLFWwindow* window) {
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
 
-        drawCube(2.0, 1.0, 2.0);
-        drawCube(1.0, 1.0, 2.0);
-        drawCube(2.0, 1.0, 3.0);
-        drawCube(2.0, 2.0, 2.0);
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 10; j++) {
-                drawCube((double)i - 5, 0.0, (double)j - 5);
-            }
-        }
+        drawWorld(&world);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
+    removeWorld(&world);
 }

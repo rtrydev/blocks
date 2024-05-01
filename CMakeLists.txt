@@ -12,7 +12,7 @@ endif()
 project ("blocks")
 
 # Add source to this project's executable.
-add_executable ("blocks" src/main src/window src/display src/cube src/player)
+add_executable ("blocks" src/main src/window src/display src/cube src/player "src/world.h" "src/world.c")
 
 target_include_directories("blocks" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/include")
 target_link_libraries("blocks" opengl32 glu32 "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/lib/glfw3.lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/lib/Release/Win32/glew32.lib")

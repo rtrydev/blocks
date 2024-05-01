@@ -7,6 +7,7 @@ bool isWClicked = false;
 bool isSClicked = false;
 bool isDClicked = false;
 bool isAClicked = false;
+bool isSpaceClicked = false;
 
 void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
@@ -26,6 +27,10 @@ void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int actio
         if (key == GLFW_KEY_A) {
             isAClicked = false;
         }
+
+        if (key == GLFW_KEY_SPACE) {
+            isSpaceClicked = false;
+        }
     }
 
     if (action == GLFW_PRESS) {
@@ -43,6 +48,10 @@ void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int actio
 
         if (key == GLFW_KEY_A) {
             isAClicked = true;
+        }
+
+        if (key == GLFW_KEY_SPACE) {
+            isSpaceClicked = true;
         }
 
         if (key == GLFW_KEY_ESCAPE) {
@@ -67,6 +76,12 @@ void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int actio
 
     if (isAClicked) {
         playerSidewayForce -= 1.0;
+    }
+
+    if (isSpaceClicked) {
+        if (!playerInAir) {
+            playerUpForce += 2.0;
+        }
     }
 }
 
