@@ -1,5 +1,4 @@
 #include "display.h"
-#include "cube.h"
 #include "player.h"
 #include "world.h"
 

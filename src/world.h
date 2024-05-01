@@ -5,7 +5,7 @@
 
 void generateWorld(int**** worldStructure);
 void removeWorld(int**** worldStructure);
-void drawWorld(int*** worldStructure);
+void drawWorld(int**** worldStructure);
 
 void searchForCollision(
 	double positionX, double positionY, double positionZ,

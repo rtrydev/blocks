@@ -1,4 +1,5 @@
 #include "world.h"
+#include "cube.h"
 #include <stdlib.h>
 #include <time.h>
 #include <limits.h>
@@ -70,8 +71,6 @@ void searchForCollision(
     bool* isCollisionX, bool* isCollisionY, bool* isCollisionZ,
     int**** worldStructure
 ) {
-    bool outOfBoundsDirection = false;
-
     for (double i = -0.25; i < 0.49; i += 0.25) {
         int quantizedPositionX = (int)round(positionX + i);
         int quantizedPositionY = (int)round(positionY);
