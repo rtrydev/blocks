@@ -1,2 +1,5 @@
 blocks
 .vscode
+.vs
+lib
+out
