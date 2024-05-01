@@ -73,9 +73,7 @@ void processPlayerPositionChange(
     deltaTime = currentTime - previousTime;
     previousTime = currentTime;
 
-    double forceVectorLength = sqrt(
-        pow(playerForwardForce, 2) + pow(playerSidewayForce, 2)
-    );
+    double forceVectorLength = sqrt(pow(playerForwardForce, 2) + pow(playerSidewayForce, 2));
 
     if (forceVectorLength < EPSILON) {
         return;
@@ -84,11 +82,15 @@ void processPlayerPositionChange(
     double normalizedForward = playerSpeed * playerForwardForce / forceVectorLength;
     double normalizedSideway = playerSpeed * playerSidewayForce / forceVectorLength;
 
-    playerPositionX += normalizedForward * lookAtX * deltaTime / DELTA_TIME_FACTOR;
-    playerPositionZ += normalizedForward * lookAtZ * deltaTime / DELTA_TIME_FACTOR;
+    double directionVectorLength = sqrt(pow(lookAtX, 2) + pow(lookAtZ, 2));
+    double normalizedLookAtX = lookAtX / directionVectorLength;
+    double normalizedLookAtZ = lookAtZ / directionVectorLength;
 
-    playerPositionX += normalizedSideway * (lookAtX * cos(PI / 2.0) - lookAtZ * sin(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
-    playerPositionZ += normalizedSideway * (lookAtX * sin(PI / 2.0) + lookAtZ * cos(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+    playerPositionX += normalizedForward * normalizedLookAtX * deltaTime / DELTA_TIME_FACTOR;
+    playerPositionZ += normalizedForward * normalizedLookAtZ * deltaTime / DELTA_TIME_FACTOR;
+
+    playerPositionX += normalizedSideway * (normalizedLookAtX * cos(PI / 2.0) - normalizedLookAtZ * sin(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
+    playerPositionZ += normalizedSideway * (normalizedLookAtX * sin(PI / 2.0) + normalizedLookAtZ * cos(PI / 2.0)) * deltaTime / DELTA_TIME_FACTOR;
 }
 
 void processDisplayLoop(GLFWwindow* window) {
