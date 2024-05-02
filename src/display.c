@@ -89,7 +89,7 @@ void processPlayerPositionChange(
     previousPlayerPositionY = playerPositionY;
 
     if (playerInAir && playerUpForce > -15.0) {
-        playerUpForce -= 0.2 * deltaTime / DELTA_TIME_FACTOR;
+        playerUpForce -= 0.35 * deltaTime / DELTA_TIME_FACTOR;
     }
 
     bool isCollisionX = false;

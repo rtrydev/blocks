@@ -80,7 +80,7 @@ void keyboardButtonCallback(GLFWwindow* window, int key, int scancode, int actio
 
     if (isSpaceClicked) {
         if (!playerInAir) {
-            playerUpForce += 2.1;
+            playerUpForce += 2.5;
         }
     }
 }

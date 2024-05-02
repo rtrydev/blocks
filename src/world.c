@@ -81,15 +81,15 @@ void searchForCollision(
         int approachingZ = (int)round(positionZ - i + directionZ);
 
         // Out of bounds
-        if (quantizedPositionX < 0 || quantizedPositionX > 15 || approachingX < 0) {
+        if (quantizedPositionX < 0 || quantizedPositionX > 15 || approachingX < 0 || approachingX > 15) {
             return;
         }
 
-        if (quantizedPositionY < 0 || quantizedPositionY > 15 || approachingY > 13) {
+        if (quantizedPositionY < 0 || quantizedPositionY > 15 || approachingY > 13 || approachingY < -3) {
             return;
         }
 
-        if (quantizedPositionZ < 0 || quantizedPositionZ > 15 || approachingZ < 0) {
+        if (quantizedPositionZ < 0 || quantizedPositionZ > 15 || approachingZ < 0 || approachingZ > 15) {
             return;
         }
 
