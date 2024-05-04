@@ -7,8 +7,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "window.h"
-#include "display.h"
+#include "engine/window.h"
+#include "engine/display.h"
 
 int main(void) {
     GLFWwindow* window = initWindow(1280, 720);

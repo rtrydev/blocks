@@ -1,4 +1,6 @@
 #include "cube.h"
+#include "types.h"
+
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
 #else
@@ -8,7 +10,7 @@
 #include <GL/gl.h>
 #endif
 
-void drawCube(double positionX, double positionY, double positionZ) {
+void drawCube(Vector3 position) {
     GLfloat vertices[] =
     {
         -1, -1, -1,   -1, -1,  1,   -1,  1,  1,   -1,  1, -1,
@@ -44,7 +46,7 @@ void drawCube(double positionX, double positionY, double positionZ) {
     };
 
     glPushMatrix();
-    glTranslatef(positionX, positionY - 1.0, positionZ);
+    glTranslatef(position.x + 0.5, position.y - 1.0, position.z + 0.5);
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
@@ -60,7 +62,6 @@ void drawCube(double positionX, double positionY, double positionZ) {
 
     glPopMatrix();
 
-    /* Cleanup states */
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 }

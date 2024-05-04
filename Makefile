@@ -13,7 +13,7 @@ ifeq ($(detected_OS),Linux)
 	LIBS := -lglfw -lGLU -lGL -lm
 endif
 
-SRCS = src/main.c src/cube.c src/window.c src/display.c src/player.c src/world.c
+SRCS = src/main.c src/engine/cube.c src/engine/window.c src/engine/display.c src/engine/player.c src/engine/world.c src/engine/userinputs.c src/engine/viewport.c src/engine/gametime.c src/engine/forces.c
 
 OUTPUT = blocks
 
