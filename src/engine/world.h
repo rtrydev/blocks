@@ -21,6 +21,6 @@ typedef struct WorldState {
 void generateWorld();
 void removeWorld();
 void drawWorld();
-void getGameElementsInProximity(Vector3 position, GameElement* gameElements);
+void getGameElementsInProximity(Vector3 position, GameElement** gameElements);
 
 #endif

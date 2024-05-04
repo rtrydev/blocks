@@ -109,7 +109,7 @@ void processMouseMoveActions(GLFWwindow* window, double x, double y) {
         currentClampedX = currentClampedX + viewDeltaX;
     }
 
-    currentClampedY = min(max(currentClampedY + viewDeltaY, -Y_VIEW_CLAMP), Y_VIEW_CLAMP);
+    currentClampedY = fmin(fmax(currentClampedY + viewDeltaY, -Y_VIEW_CLAMP), Y_VIEW_CLAMP);
 
     double longitude = currentClampedX / ROTATION_FACTOR;
     double latitude = 2 * atan(exp(currentClampedY / ROTATION_FACTOR)) - PI / 2.0;
