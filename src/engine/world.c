@@ -39,7 +39,7 @@ void generateWorld() {
         }
 
         if (x > 5 && y > 0 && z > 5) {
-            if (rand() < 1683) {
+            if ((double)rand() / RAND_MAX < 0.05) {
                 worldState.chunks[0].gameElements[i].elementType = 1;
             }
         }
