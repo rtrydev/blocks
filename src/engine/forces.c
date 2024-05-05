@@ -12,6 +12,7 @@
 
 double previousPlayerPositionY = 0.0;
 bool playerPositionInitialized = false;
+bool blockJump = false;
 
 bool collisionOnX = false;
 bool collisionOnY = false;
@@ -25,7 +26,7 @@ void addForcesBasedOnInputs() {
         .sideway = 0.0,
         .upward = playerState.forces.upward
     };
- 
+
     InputState inputState = getInputState();
 
     if (inputState.UP_ACTIVE) {
@@ -47,11 +48,12 @@ void addForcesBasedOnInputs() {
     setPlayerForces(forces);
 
     if (inputState.JUMP_ACTIVE) {
-        if (!playerState.inAir) {
+        if (!playerState.inAir && !blockJump) {
+            blockJump = true;
             RelativeVector3 jumpForce = {
                 .forward = 0.0,
                 .sideway = 0.0,
-                .upward = 2.2
+                .upward = 4.4
             };
 
             appendPlayerForces(jumpForce);
@@ -193,6 +195,7 @@ void processForces() {
         };
 
         setPlayerForces(forces);
+        blockJump = false;
     }
 
     if (!playerState.inAir && position.y != previousPlayerPositionY) {
