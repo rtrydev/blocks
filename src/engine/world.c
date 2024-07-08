@@ -5,42 +5,66 @@
 #include <limits.h>
 #include <math.h>
 #include "types.h"
+#include "player.h"
 
 WorldState worldState = {
-    .chunks = NULL
+    .chunks = NULL,
+    .chunkCount = 36
 };
+
+void getChunksInProximity(int proximity, Chunk* chunks) {
+    Vector3 playerPosition = getPlayerState().position;
+
+    int currentChunk = 0;
+
+    for (int i = 0; i < worldState.chunkCount; i++) {
+        if (worldState.chunks[i].position.x > playerPosition.x - (double)CHUNK_SIZE
+            && worldState.chunks[i].position.x < playerPosition.x + (double)CHUNK_SIZE
+            && worldState.chunks[i].position.y > playerPosition.y - (double)CHUNK_SIZE
+            && worldState.chunks[i].position.y < playerPosition.y + (double)CHUNK_SIZE
+            && worldState.chunks[i].position.z > playerPosition.z - (double)CHUNK_SIZE
+            && worldState.chunks[i].position.z < playerPosition.z + (double)CHUNK_SIZE
+        ) {
+            chunks[currentChunk++] = worldState.chunks[i];
+        }
+    }
+}
 
 void generateWorld() {
     srand(123);
+    worldState.chunks = calloc(worldState.chunkCount, sizeof(Chunk));
 
-    worldState.chunks = calloc(1, sizeof(Chunk));
-    Vector3 chunkPosition = {
-        .x = 0.0,
+    for (int j = 0; j < worldState.chunkCount; j++) {
+        double offset = (double)CHUNK_SIZE * (double)(worldState.chunkCount / (int)sqrt(worldState.chunkCount)) / 2.0;
+
+        Vector3 chunkPosition = {
+        .x = 0.0 + (double)CHUNK_SIZE * (double)(j / (int)sqrt(worldState.chunkCount)) - offset,
         .y = 0.0,
-        .z = 0.0
-    };
-    worldState.chunks[0].position = chunkPosition;
-    worldState.chunks[0].gameElements = calloc(16 * 16 * 16, sizeof(GameElement));
-
-    for (size_t i = 0; i < 16 * 16 * 16; i++) {
-        int x = i % 16;
-        int y = (i / 16) % 16;
-        int z = i / (16 * 16);
-
-        Vector3 elementPosition = {
-            .x = (double)x,
-            .y = (double)y,
-            .z = (double)z
+        .z = 0.0 + (double)CHUNK_SIZE * (double)(j % (int)sqrt(worldState.chunkCount)) - offset
         };
-        worldState.chunks[0].gameElements[i].position = elementPosition;
+        worldState.chunks[j].position = chunkPosition;
+        worldState.chunks[j].gameElements = calloc(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE, sizeof(GameElement));
 
-        if (y == 0) {
-            worldState.chunks[0].gameElements[i].elementType = 1;
-        }
+        for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+            int x = i % CHUNK_SIZE + chunkPosition.x;
+            int y = (i / CHUNK_SIZE) % CHUNK_SIZE + chunkPosition.y;
+            int z = i / (CHUNK_SIZE * CHUNK_SIZE) + chunkPosition.z;
 
-        if (x > 5 && y > 0 && z > 5) {
-            if ((double)rand() / RAND_MAX < 0.05) {
-                worldState.chunks[0].gameElements[i].elementType = 1;
+            Vector3 elementPosition = {
+                .x = (double)x,
+                .y = (double)y,
+                .z = (double)z
+            };
+            worldState.chunks[j].gameElements[i].position = elementPosition;
+
+            if (y == 0) {
+                worldState.chunks[j].gameElements[i].elementType = 1;
+            }
+
+            if (x > 5 && y > 0 && z > 5) {
+                if ((double)rand() / RAND_MAX < 0.05) {
+                    worldState.chunks[j].gameElements[i].elementType = 1;
+                }
             }
         }
     }
@@ -48,18 +72,22 @@ void generateWorld() {
 
 
 void removeWorld() {
-    free(worldState.chunks[0].gameElements);
+    for (int i = 0; i < worldState.chunkCount; i++) {
+        free(worldState.chunks[i].gameElements);
+    }
     free(worldState.chunks);
 }
 
 void drawWorld() {
-    for (int i = 0; i < 16 * 16 * 16; i++) {
-        int x = i % 16;
-        int y = (i / 16) % 16;
-        int z = i / (16 * 16);
+    for (int j = 0; j < worldState.chunkCount; j++) {
+        for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+            int x = i % CHUNK_SIZE;
+            int y = (i / CHUNK_SIZE) % CHUNK_SIZE;
+            int z = i / (CHUNK_SIZE * CHUNK_SIZE);
 
-        if (worldState.chunks[0].gameElements[i].elementType == 1) {
-            drawCube(worldState.chunks[0].gameElements[i].position);
+            if (worldState.chunks[j].gameElements[i].elementType == 1) {
+                drawCube(worldState.chunks[j].gameElements[i].position);
+            }
         }
     }
 }
@@ -67,21 +95,34 @@ void drawWorld() {
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements) {
     (*gameElements) = calloc(36, sizeof(GameElement));
 
+    int chunksInProximityCount = 8;
+    Chunk* chunksInProximity = calloc(chunksInProximityCount, sizeof(Chunk));
+
+    getChunksInProximity(1, chunksInProximity);
+
     int currentGameElement = 0;
 
-    for (size_t i = 0; i < 16 * 16 * 16; i++) {
-        int x = i % 16;
-        int y = (i / 16) % 16;
-        int z = i / (16 * 16);
+    for (int j = 0; j < chunksInProximityCount; j++) {
+        if (chunksInProximity[j].gameElements == NULL) {
+            continue;
+        }
 
-        Vector3 currentElementPosition = worldState.chunks[0].gameElements[i].position;
+        for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+            int x = i % CHUNK_SIZE;
+            int y = (i / CHUNK_SIZE) % CHUNK_SIZE;
+            int z = i / (CHUNK_SIZE * CHUNK_SIZE);
 
-        bool isNearX = currentElementPosition.x < position.x + 1.5 && currentElementPosition.x > position.x - 1.5;
-        bool isNearY = currentElementPosition.y < position.y + 3.0 && currentElementPosition.y > position.y - 1.0;
-        bool isNearZ = currentElementPosition.z < position.z + 1.5 && currentElementPosition.z > position.z - 1.5;
+            Vector3 currentElementPosition = chunksInProximity[j].gameElements[i].position;
 
-        if (isNearX && isNearY && isNearZ) {
-            (*gameElements)[currentGameElement++] = worldState.chunks[0].gameElements[i];
+            bool isNearX = currentElementPosition.x < position.x + 1.5 && currentElementPosition.x > position.x - 1.5;
+            bool isNearY = currentElementPosition.y < position.y + 3.0 && currentElementPosition.y > position.y - 1.0;
+            bool isNearZ = currentElementPosition.z < position.z + 1.5 && currentElementPosition.z > position.z - 1.5;
+
+            if (isNearX && isNearY && isNearZ) {
+                (*gameElements)[currentGameElement++] = chunksInProximity[j].gameElements[i];
+            }
         }
     }
+
+    free(chunksInProximity);
 }

@@ -1,5 +1,6 @@
 #ifndef BLOCKS_WORLD
 #define BLOCKS_WORLD
+#define CHUNK_SIZE 16
 
 #include <stdbool.h>
 #include "types.h"
@@ -16,6 +17,7 @@ typedef struct Chunk {
 
 typedef struct WorldState {
 	Chunk* chunks;
+	int chunkCount;
 } WorldState;
 
 void generateWorld();
