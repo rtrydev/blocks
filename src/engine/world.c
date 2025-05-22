@@ -7,6 +7,13 @@
 #include "types.h"
 #include "player.h"
 
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#else
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
+
 WorldState worldState = {
     .chunks = NULL,
     .chunkCount = 36
