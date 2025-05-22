@@ -13,8 +13,10 @@ bool startViewInitialized = false;
 double lastViewXPosition = 0.0;
 double lastViewYPosition = 0.0;
 
-double currentClampedX = 0.0;
-double currentClampedY = 0.0;
+double currentYaw = 0.0;
+double currentPitch = 0.0;
+
+const double MAX_PITCH_RADIANS = (PI / 2.0) - 0.00017453292519943295;
 
 InputState currentInputState = {
 	.UP_ACTIVE = false,
@@ -86,38 +88,33 @@ void processMouseMoveActions(GLFWwindow* window, double x, double y) {
     if (!startViewInitialized) {
         startViewX = x;
         startViewY = y;
-
+        lastViewXPosition = 0.0;
+        lastViewYPosition = 0.0;
         startViewInitialized = true;
     }
 
-    x -= startViewX;
-    y -= startViewY;
+    double relativeX = x - startViewX;
+    double relativeY = y - startViewY;
 
-    double viewDeltaX = x - lastViewXPosition;
-    double viewDeltaY = y - lastViewYPosition;
+    double viewDeltaX = relativeX - lastViewXPosition;
+    double viewDeltaY = relativeY - lastViewYPosition;
 
-    lastViewXPosition = x;
-    lastViewYPosition = y;
+    lastViewXPosition = relativeX;
+    lastViewYPosition = relativeY;
 
-    if (currentClampedX + viewDeltaX > X_VIEW_CLAMP) {
-        currentClampedX = viewDeltaY + currentClampedX - 2 * X_VIEW_CLAMP;
-    }
-    else if (currentClampedX + viewDeltaX < -X_VIEW_CLAMP) {
-        currentClampedX = viewDeltaX + currentClampedX + 2 * X_VIEW_CLAMP;
-    }
-    else {
-        currentClampedX = currentClampedX + viewDeltaX;
-    }
+    currentYaw += viewDeltaX / ROTATION_FACTOR;
+    currentYaw = atan2(sin(currentYaw), cos(currentYaw));
 
-    currentClampedY = fmin(fmax(currentClampedY + viewDeltaY, -Y_VIEW_CLAMP), Y_VIEW_CLAMP);
+    currentPitch -= viewDeltaY / ROTATION_FACTOR;
+    currentPitch = fmax(-MAX_PITCH_RADIANS, fmin(currentPitch, MAX_PITCH_RADIANS));
 
-    double longitude = currentClampedX / ROTATION_FACTOR;
-    double latitude = 2 * atan(exp(currentClampedY / ROTATION_FACTOR)) - PI / 2.0;
+    double longitude = currentYaw;
+    double latitude = currentPitch;
 
     Vector3 rotation;
 
     rotation.x = cos(latitude) * cos(longitude);
-    rotation.y = -currentClampedY / ROTATION_FACTOR;
+    rotation.y = sin(latitude);
     rotation.z = cos(latitude) * sin(longitude);
 
     setViewportRotation(rotation);
