@@ -13,15 +13,13 @@
 
 #if defined(__APPLE__)
 #include <OpenGL/glu.h>
+#include <GLUT/glut.h> // For glutBitmapCharacter on macOS
 #else
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <GL/glu.h>
-#include <GL/glut.h> // For glutBitmapCharacter
-#endif
-#if defined(__APPLE__)
-#include <GLUT/glut.h> // For glutBitmapCharacter on macOS
+#include <GL/glut.h>
 #endif
 
 void processDisplayLoop(GLFWwindow* window) {

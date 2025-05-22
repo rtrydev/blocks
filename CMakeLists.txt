@@ -11,12 +11,6 @@ endif()
 
 project ("blocks")
 
-find_package(OpenGL REQUIRED)
-find_package(GLU REQUIRED)
-find_package(GLUT REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(GLFW REQUIRED)
-
 # Add source to this project's executable.
 add_executable (
 	"blocks"
@@ -35,8 +29,8 @@ add_executable (
 	"src/engine/frustum.h" "src/engine/frustum.c"
   )
 
-target_include_directories("blocks" PRIVATE) # System headers should be found now
-target_link_libraries("blocks" OpenGL::GL ${GLU_LIBRARY} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES} ${GLFW_LIBRARIES})
+target_include_directories("blocks" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/freeglut/include")
+target_link_libraries("blocks" opengl32 glu32 "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/lib/glfw3.lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/lib/Release/x64/glew32.lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib/freeglut/lib/x64/freeglut.lib")
 
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET blocks PROPERTY CXX_STANDARD 20)

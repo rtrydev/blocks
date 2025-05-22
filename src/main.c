@@ -6,12 +6,14 @@
 #endif
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <GL/glut.h>
 
 #include "engine/window.h"
 #include "engine/display.h"
 #include "engine/cube.h"
 
-int main(void) {
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
     GLFWwindow* window = initWindow(1280, 720);
 
     if (window != NULL) {
