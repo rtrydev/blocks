@@ -79,6 +79,9 @@ void removeWorld() {
 }
 
 void drawWorld() {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             int x = i % CHUNK_SIZE;
@@ -90,6 +93,9 @@ void drawWorld() {
             }
         }
     }
+
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements) {

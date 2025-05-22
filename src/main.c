@@ -9,12 +9,15 @@
 
 #include "engine/window.h"
 #include "engine/display.h"
+#include "engine/cube.h"
 
 int main(void) {
     GLFWwindow* window = initWindow(1280, 720);
 
     if (window != NULL) {
+        initCubeVBOs();
         processDisplayLoop(window);
+        freeCubeVBOs();
     }
 
     glfwTerminate();
