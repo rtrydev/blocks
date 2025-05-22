@@ -20,27 +20,20 @@
 #include <GL/glu.h>
 #endif
 
-// It's good practice to ensure GLFW is included if using its functions directly.
-// However, it's likely included via "display.h" or another engine header
-// if glfwGetTime() was already in use. For this exercise, I'll assume it's accessible.
-// #include <GLFW/glfw3.h> // Uncomment if direct include is necessary
-
 void processDisplayLoop(GLFWwindow* window) {
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-    double currentTime = lastTime; // Initialize currentTime
+    double currentTime = lastTime;
 
     generateWorld();
 
     while(!glfwWindowShouldClose(window))
     {
         processDeltaTime();
-        currentTime = glfwGetTime(); // Update current time each frame
+        currentTime = glfwGetTime();
 
-        // Measure speed
         nbFrames++;
-        if (currentTime - lastTime >= 1.0 ){ // If last prinf & HReset was more than 1 sec ago
-            // printf and reset timer
+        if (currentTime - lastTime >= 1.0 ) {
             printf("%f ms/frame (%d FPS)\n", 1000.0 / (double)nbFrames, nbFrames);
             nbFrames = 0;
             lastTime += 1.0;
