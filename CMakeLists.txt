@@ -26,6 +26,7 @@ add_executable (
 	"src/engine/viewport.h" "src/engine/viewport.c"
 	"src/engine/gametime.h" "src/engine/gametime.c"
 	"src/engine/forces.h" "src/engine/forces.c"
+	"src/engine/frustum.h" "src/engine/frustum.c"
   )
 
 target_include_directories("blocks" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/include")
