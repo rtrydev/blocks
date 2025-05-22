@@ -10,10 +10,10 @@ ifeq ($(detected_OS),Darwin)
 endif
 
 ifeq ($(detected_OS),Linux)
-	LIBS := -lglfw -lGLU -lGL -lm
+	LIBS := -lglfw -lGLU -lGL -lGLEW -lglut -lm
 endif
 
-SRCS = src/main.c src/engine/cube.c src/engine/window.c src/engine/display.c src/engine/player.c src/engine/world.c src/engine/userinputs.c src/engine/viewport.c src/engine/gametime.c src/engine/forces.c
+SRCS = src/main.c src/engine/cube.c src/engine/window.c src/engine/display.c src/engine/player.c src/engine/world.c src/engine/userinputs.c src/engine/viewport.c src/engine/gametime.c src/engine/forces.c src/engine/frustum.c
 
 OUTPUT = blocks
 
