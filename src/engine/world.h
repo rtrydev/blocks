@@ -9,6 +9,7 @@
 typedef struct GameElement {
 	Vector3 position;
 	int elementType;
+	bool isObstructed;
 } GameElement;
 
 typedef struct Chunk {
@@ -24,6 +25,6 @@ typedef struct WorldState {
 void generateWorld();
 void removeWorld();
 void drawWorld(const Frustum* frustum);
-void getGameElementsInProximity(Vector3 position, GameElement** gameElements);
+void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 rangeTo, GameElement** gameElements);
 
 #endif

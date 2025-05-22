@@ -67,7 +67,18 @@ void adjustForcesBasedOnCollision() {
     Vector3 rotation = getViewportRotation();
 
     GameElement* nearGameElements = NULL;
-    getGameElementsInProximity(position, &nearGameElements);
+    Vector3 rangeTo = {
+        .x = 1.5,
+        .y = 1.0 + playerState.height,
+        .z = 1.5
+    };
+    Vector3 rangeFrom = {
+        .x = 1.5,
+        .y = 1.0,
+        .z = 1.5
+    };
+
+    getGameElementsInProximity(position, rangeFrom, rangeTo, &nearGameElements);
 
     if (nearGameElements == NULL) {
         return;
