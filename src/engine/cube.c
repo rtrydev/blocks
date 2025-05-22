@@ -1,13 +1,19 @@
 #include "cube.h"
 #include "types.h"
 
-#if defined(__APPLE__)
-#include <OpenGL/gl.h>
-#else
-#if defined(_WIN32)
+#if defined(_WIN32) // For GLEW on Windows
 #include <windows.h>
 #endif
-#include <GL/glew.h>
+#include <GL/glew.h> // GLEW must be first
+
+#if defined(__APPLE__)
+#include <OpenGL/gl.h> // Apple's GL header
+#else
+// On other systems (like Linux), glew.h itself should handle the inclusion
+// of necessary GL headers or provide all definitions.
+// The original file had an explicit #include <GL/gl.h> here.
+// For now, I'll keep it to minimize potential side effects on non-Apple, non-Windows platforms,
+// though it's often redundant after including glew.h.
 #include <GL/gl.h>
 #endif
 
