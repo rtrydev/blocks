@@ -69,6 +69,27 @@ void drawCube(Vector3 position) {
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
+void drawCubeDepth(Vector3 position) {
+    // Note: This function assumes the depth shader program is already active
+    // and appropriate uniforms (model, view, projection) are set.
+    // It also assumes that the VBOs are already initialized via initCubeVBOs().
+
+    glPushMatrix(); // Using old matrix style for consistency with drawCube
+    glTranslatef(position.x + 0.5, position.y - 1.0, position.z + 0.5);
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboVertexId);
+    glVertexPointer(3, GL_FLOAT, 0, NULL); // This is legacy, for modern GL use layout qualifiers in shader
+
+    // For depth pass, we only need to draw the geometry.
+    // No color, no texture, no outline.
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glDrawArrays(GL_QUADS, 0, 24);
+
+    glPopMatrix();
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 void initCubeVBOs() {
     glGenBuffers(1, &vboVertexId);
     glGenBuffers(1, &vboColorId);

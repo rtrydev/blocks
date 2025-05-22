@@ -23,7 +23,9 @@ typedef struct WorldState {
 
 void generateWorld();
 void removeWorld();
-void drawWorld(const Frustum* frustum);
+// Modified signature to include DepthMapFBO for HZB culling
+void drawWorld(const Frustum* frustum, const DepthMapFBO* depthMapFBO); 
+void drawWorldDepth(const Frustum* frustum); // New function for depth pass
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements);
 
 #endif

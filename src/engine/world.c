@@ -7,6 +7,7 @@
 #include "types.h"
 #include "player.h"
 #include "frustum.h"
+#include <stdio.h> // Added for printf
 
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
@@ -86,9 +87,16 @@ void removeWorld() {
     free(worldState.chunks);
 }
 
-void drawWorld(const Frustum* frustum) {
+// Updated signature to include depthMapFBO
+void drawWorld(const Frustum* frustum, const DepthMapFBO* depthMapFBO) {
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
+
+    // Get current projection and modelview matrices for HZB check
+    GLfloat projectionMatrix[16];
+    GLfloat modelViewMatrix[16];
+    glGetFloatv(GL_PROJECTION_MATRIX, projectionMatrix);
+    glGetFloatv(GL_MODELVIEW_MATRIX, modelViewMatrix);
 
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
@@ -100,7 +108,27 @@ void drawWorld(const Frustum* frustum) {
                 getCubeAABB(basePosition, &cubeCenter, &cubeExtents);
                 
                 if (isAABBInFrustum(frustum, &cubeCenter, &cubeExtents)) {
-                    drawCube(basePosition);
+                    // Calculate AABB min/max in world space for HZB check
+                    Vector3 aabbMinWorld = {
+                        cubeCenter.x - cubeExtents.x,
+                        cubeCenter.y - cubeExtents.y,
+                        cubeCenter.z - cubeExtents.z
+                    };
+                    Vector3 aabbMaxWorld = {
+                        cubeCenter.x + cubeExtents.x,
+                        cubeCenter.y + cubeExtents.y,
+                        cubeCenter.z + cubeExtents.z
+                    };
+
+                    // Perform HZB occlusion check
+                    if (isOccludedByHZB(&aabbMinWorld, &aabbMaxWorld, depthMapFBO, projectionMatrix, modelViewMatrix)) {
+                        // Log that the cube was occluded
+                        printf("Cube at (%.1f, %.1f, %.1f) with center (%.1f, %.1f, %.1f) occluded by HZB.\n", 
+                               basePosition.x, basePosition.y, basePosition.z,
+                               cubeCenter.x, cubeCenter.y, cubeCenter.z);
+                    } else {
+                        drawCube(basePosition);
+                    }
                 }
             }
         }
@@ -109,6 +137,34 @@ void drawWorld(const Frustum* frustum) {
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
+
+void drawWorldDepth(const Frustum* frustum) {
+    // Note: This function assumes the depth shader program is already active
+    // and appropriate uniforms (model, view, projection) are set.
+    // It also assumes that cube VBOs are initialized.
+
+    glEnableClientState(GL_VERTEX_ARRAY); // Still need to enable vertex array for glVertexPointer
+
+    for (int j = 0; j < worldState.chunkCount; j++) {
+        for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+            if (worldState.chunks[j].gameElements[i].elementType == 1) {
+                Vector3 basePosition = worldState.chunks[j].gameElements[i].position;
+                Vector3 cubeCenter;
+                Vector3 cubeExtents;
+                
+                // AABB check for culling is still useful for the depth pass
+                getCubeAABB(basePosition, &cubeCenter, &cubeExtents);
+                
+                if (isAABBInFrustum(frustum, &cubeCenter, &cubeExtents)) {
+                    drawCubeDepth(basePosition); // Call the simplified depth drawing function
+                }
+            }
+        }
+    }
+
+    glDisableClientState(GL_VERTEX_ARRAY);
+}
+
 
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements) {
     (*gameElements) = calloc(36, sizeof(GameElement));
