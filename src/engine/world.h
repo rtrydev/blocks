@@ -4,6 +4,7 @@
 
 #include <stdbool.h>
 #include "types.h"
+#include "frustum.h"
 
 typedef struct GameElement {
 	Vector3 position;
@@ -22,7 +23,7 @@ typedef struct WorldState {
 
 void generateWorld();
 void removeWorld();
-void drawWorld();
+void drawWorld(const Frustum* frustum);
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements);
 
 #endif

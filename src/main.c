@@ -9,12 +9,33 @@
 
 #include "engine/window.h"
 #include "engine/display.h"
+#include "engine/cube.h"
 
 int main(void) {
     GLFWwindow* window = initWindow(1280, 720);
 
     if (window != NULL) {
+        glewExperimental = GL_TRUE;
+        GLenum err = glewInit();
+        if (GLEW_OK != err) {
+            fprintf(stderr, "Error initializing GLEW: %s\n", glewGetErrorString(err));
+            glfwDestroyWindow(window);
+            glfwTerminate();
+            return 1;
+        }
+
+        printf("Using GLEW %s\n", glewGetString(GLEW_VERSION));
+        printf("OpenGL Renderer: %s\n", (const char*)glGetString(GL_RENDERER));
+        printf("OpenGL Version: %s\n", (const char*)glGetString(GL_VERSION));
+
+        initCubeVBOs();
         processDisplayLoop(window);
+        freeCubeVBOs();
+
+        glfwDestroyWindow(window);
+    }
+    else {
+        fprintf(stderr, "initWindow failed, terminating.\n");
     }
 
     glfwTerminate();

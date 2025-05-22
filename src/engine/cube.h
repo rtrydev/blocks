@@ -5,4 +5,7 @@
 
 void drawCube(Vector3 position);
 
+void initCubeVBOs();
+void freeCubeVBOs();
+
 #endif

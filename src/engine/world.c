@@ -6,6 +6,14 @@
 #include <math.h>
 #include "types.h"
 #include "player.h"
+#include "frustum.h"
+
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#else
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
 
 WorldState worldState = {
     .chunks = NULL,
@@ -78,18 +86,28 @@ void removeWorld() {
     free(worldState.chunks);
 }
 
-void drawWorld() {
+void drawWorld(const Frustum* frustum) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
-            int x = i % CHUNK_SIZE;
-            int y = (i / CHUNK_SIZE) % CHUNK_SIZE;
-            int z = i / (CHUNK_SIZE * CHUNK_SIZE);
-
             if (worldState.chunks[j].gameElements[i].elementType == 1) {
-                drawCube(worldState.chunks[j].gameElements[i].position);
+                Vector3 basePosition = worldState.chunks[j].gameElements[i].position;
+                Vector3 cubeCenter;
+                Vector3 cubeExtents;
+                
+                getCubeAABB(basePosition, &cubeCenter, &cubeExtents);
+                
+                if (isAABBInFrustum(frustum, &cubeCenter, &cubeExtents)) {
+                    drawCube(basePosition);
+                }
             }
         }
     }
+
+    glDisableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void getGameElementsInProximity(Vector3 position, GameElement** gameElements) {

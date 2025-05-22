@@ -4,6 +4,7 @@
 #include "viewport.h"
 #include "forces.h"
 #include "gametime.h"
+#include "frustum.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -20,25 +21,22 @@
 #endif
 
 void processDisplayLoop(GLFWwindow* window) {
-    int frames = 0;
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+    double currentTime = lastTime;
 
-    double secondStart = glfwGetTime();
-    double currentTime = secondStart;
-
-    int*** world = NULL;
-    generateWorld(&world);
+    generateWorld();
 
     while(!glfwWindowShouldClose(window))
     {
         processDeltaTime();
         currentTime = glfwGetTime();
 
-        if (currentTime - secondStart >= 1.0) {
-            printf("%d fps\n", frames);
-            frames = 0;
-            secondStart = currentTime;
-        } else {
-            frames++;
+        nbFrames++;
+        if (currentTime - lastTime >= 1.0 ) {
+            printf("%f ms/frame (%d FPS)\n", 1000.0 / (double)nbFrames, nbFrames);
+            nbFrames = 0;
+            lastTime += 1.0;
         }
 
         GLint windowWidth, windowHeight;
@@ -75,11 +73,14 @@ void processDisplayLoop(GLFWwindow* window) {
 
         glMatrixMode(GL_MODELVIEW_MATRIX);
 
-        drawWorld(&world);
+        Frustum viewFrustum;
+        extractFrustumPlanes(&viewFrustum);
+
+        drawWorld(&viewFrustum);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    removeWorld(&world);
+    removeWorld();
 }
