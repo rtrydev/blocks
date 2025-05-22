@@ -13,7 +13,7 @@
 
 #if defined(__APPLE__)
 #include <OpenGL/glu.h>
-#include <GLUT/glut.h> // For glutBitmapCharacter on macOS
+#include <GLUT/glut.h>
 #else
 #if defined(_WIN32)
 #include <windows.h>
@@ -26,7 +26,7 @@ void processDisplayLoop(GLFWwindow* window) {
     double lastFpsTime = glfwGetTime();
     int frameCount = 0;
     char fpsText[32];
-    sprintf(fpsText, "FPS: N/A"); // Initial text
+    sprintf(fpsText, "FPS: N/A");
 
     generateWorld();
 
@@ -73,28 +73,21 @@ void processDisplayLoop(GLFWwindow* window) {
 
         drawWorld(&viewFrustum);
 
-        // FPS calculation
         frameCount++;
         double currentTime = glfwGetTime();
         double elapsedTime = currentTime - lastFpsTime;
 
-        if (elapsedTime >= 1.0) { // If one second has passed
+        if (elapsedTime >= 1.0) {
             double fps = (double)frameCount / elapsedTime;
             sprintf(fpsText, "FPS: %.2f", fps);
             frameCount = 0;
             lastFpsTime = currentTime;
         }
 
-        // Setup for UI rendering
-        // GLint windowWidth, windowHeight; are already fetched earlier in the loop
         setupOrthographicProjection(windowWidth, windowHeight);
 
-        // Render FPS text (e.g., at top-left)
-        // Y-coordinate needs to be adjusted based on windowHeight for top-left.
-        // If (0,0) is bottom-left, then top-left is (x_offset, windowHeight - y_offset).
-        renderText(10.0f, windowHeight - 20.0f, fpsText, 1.0f, 1.0f, 0.0f); // x, y, text, r, g, b (yellow)
+        renderText(10.0f, windowHeight - 20.0f, fpsText, 1.0f, 1.0f, 0.0f);
 
-        // Restore perspective projection
         restorePerspectiveProjection();
 
         glfwSwapBuffers(window);
