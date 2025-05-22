@@ -4,4 +4,9 @@
 
 void processDisplayLoop(GLFWwindow* window);
 
+// UI Rendering Functions
+void renderText(float x, float y, char *string, float r, float g, float b);
+void setupOrthographicProjection(int windowWidth, int windowHeight);
+void restorePerspectiveProjection(void);
+
 #endif

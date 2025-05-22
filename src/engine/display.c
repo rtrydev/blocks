@@ -13,31 +13,26 @@
 
 #if defined(__APPLE__)
 #include <OpenGL/glu.h>
+#include <GLUT/glut.h>
 #else
 #if defined(_WIN32)
 #include <windows.h>
 #endif
 #include <GL/glu.h>
+#include <GL/glut.h>
 #endif
 
 void processDisplayLoop(GLFWwindow* window) {
-    double lastTime = glfwGetTime();
-    int nbFrames = 0;
-    double currentTime = lastTime;
+    double lastFpsTime = glfwGetTime();
+    int frameCount = 0;
+    char fpsText[32];
+    sprintf(fpsText, "FPS: N/A");
 
     generateWorld();
 
     while(!glfwWindowShouldClose(window))
     {
         processDeltaTime();
-        currentTime = glfwGetTime();
-
-        nbFrames++;
-        if (currentTime - lastTime >= 1.0 ) {
-            printf("%f ms/frame (%d FPS)\n", 1000.0 / (double)nbFrames, nbFrames);
-            nbFrames = 0;
-            lastTime += 1.0;
-        }
 
         GLint windowWidth, windowHeight;
 
@@ -78,9 +73,52 @@ void processDisplayLoop(GLFWwindow* window) {
 
         drawWorld(&viewFrustum);
 
+        frameCount++;
+        double currentTime = glfwGetTime();
+        double elapsedTime = currentTime - lastFpsTime;
+
+        if (elapsedTime >= 1.0) {
+            double fps = (double)frameCount / elapsedTime;
+            sprintf(fpsText, "FPS: %.2f", fps);
+            frameCount = 0;
+            lastFpsTime = currentTime;
+        }
+
+        setupOrthographicProjection(windowWidth, windowHeight);
+
+        renderText(10.0f, windowHeight - 20.0f, fpsText, 1.0f, 1.0f, 0.0f);
+
+        restorePerspectiveProjection();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     removeWorld();
+}
+
+void setupOrthographicProjection(int windowWidth, int windowHeight) {
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, windowWidth, 0, windowHeight);
+    glMatrixMode(GL_MODELVIEW);
+    glPushMatrix();
+    glLoadIdentity();
+}
+
+void restorePerspectiveProjection() {
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glPopMatrix();
+}
+
+void renderText(float x, float y, char *string, float r, float g, float b) {
+    glColor3f(r, g, b);
+    glRasterPos2f(x, y);
+    char *c;
+    for (c = string; *c != '\0'; c++) {
+        glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, *c);
+    }
 }
