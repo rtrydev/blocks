@@ -22,6 +22,7 @@ typedef struct WorldState {
 	int chunkCount;
 } WorldState;
 
+GameElement* getBlockAtGlobal(WorldState* worldState, int x, int y, int z);
 void generateWorld();
 void removeWorld();
 void drawWorld(const Frustum* frustum);
