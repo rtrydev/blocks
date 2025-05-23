@@ -154,6 +154,8 @@ void removeWorld() {
 }
 
 void drawWorld(const Frustum* frustum) {
+    PlayerState pState = getPlayerState(); // Get current player state
+
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             GameElement gameElement = worldState.chunks[j].gameElements[i];
@@ -166,7 +168,20 @@ void drawWorld(const Frustum* frustum) {
                 getCubeAABB(basePosition, &cubeCenter, &cubeExtents);
                 
                 if (isAABBInFrustum(frustum, &cubeCenter, &cubeExtents)) {
-                    drawCube(basePosition, getColorByType(gameElement.elementType));
+                    bool isHighlighted = false;
+                    if (pState.isLookingAtBlock && pState.lookingAtBlock != NULL) {
+                        if (pState.lookingAtBlock->x == gameElement.position.x &&
+                            pState.lookingAtBlock->y == gameElement.position.y &&
+                            pState.lookingAtBlock->z == gameElement.position.z) {
+                            isHighlighted = true;
+                        }
+                    }
+
+                    if (isHighlighted) {
+                        drawCube(basePosition, 0xFFFF00); // Bright Yellow for highlighting
+                    } else {
+                        drawCube(basePosition, getColorByType(gameElement.elementType));
+                    }
                 }
             }
         }
