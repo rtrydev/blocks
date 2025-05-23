@@ -2,7 +2,7 @@
 
 Vector3 currentViewportPosition = {
 	.x = 0.5,
-	.y = 1.0,
+	.y = 8.0,
 	.z = 0.5
 };
 

@@ -37,6 +37,38 @@ void getChunksInProximity(Vector3 position, int proximity, Chunk* chunks) {
     }
 }
 
+GLint getColorByType(int type) {
+	switch (type) {
+	case 0:
+		return 0x000000;
+	case 1:
+		return 0x224422;
+	case 2:
+		return 0xE5D8A6;
+    case 3:
+		return 0x6CA0DC;
+	default:
+		return 0x000000;
+	}
+}
+
+static float valueNoise2d(float x, float z) {
+    float total = 0.0f;
+    float frequency = 0.08f;
+    float amplitude = 1.0f;
+    float maxValue = 0.0f;
+    int octaves = 4;
+
+    for (int i = 0; i < octaves; i++) {
+        float n = sinf(x * frequency + i * 13.37f) * cosf(z * frequency + i * 7.13f);
+        total += n * amplitude;
+        maxValue += amplitude;
+        amplitude *= 0.5f;
+        frequency *= 2.0f;
+    }
+    return total / maxValue;
+}
+
 void generateWorld() {
     srand(123);
     worldState.chunks = calloc(worldState.chunkCount, sizeof(Chunk));
@@ -45,9 +77,9 @@ void generateWorld() {
         double offset = (double)CHUNK_SIZE * (double)(worldState.chunkCount / (int)sqrt(worldState.chunkCount)) / 2.0;
 
         Vector3 chunkPosition = {
-        .x = 0.0 + (double)CHUNK_SIZE * (double)(j / (int)sqrt(worldState.chunkCount)) - offset,
-        .y = 0.0,
-        .z = 0.0 + (double)CHUNK_SIZE * (double)(j % (int)sqrt(worldState.chunkCount)) - offset
+            .x = 0.0 + (double)CHUNK_SIZE * (double)(j / (int)sqrt(worldState.chunkCount)) - offset,
+            .y = 0.0,
+            .z = 0.0 + (double)CHUNK_SIZE * (double)(j % (int)sqrt(worldState.chunkCount)) - offset
         };
         worldState.chunks[j].position = chunkPosition;
         worldState.chunks[j].gameElements = calloc(CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE, sizeof(GameElement));
@@ -64,14 +96,20 @@ void generateWorld() {
             };
             worldState.chunks[j].gameElements[i].position = elementPosition;
 
-            if (y == 0) {
+            float height = valueNoise2d((float)x, (float)z) * 10.0f;
+            int groundHeight = (int)roundf(height);
+
+            if (y <= 0) {
+                worldState.chunks[j].gameElements[i].elementType = 3;
+            }
+            else if (y == groundHeight && groundHeight <= 1) {
+                worldState.chunks[j].gameElements[i].elementType = 2;
+            }
+            else if (y <= groundHeight) {
                 worldState.chunks[j].gameElements[i].elementType = 1;
             }
-
-            if (x > 5 && y > 0 && z > 5) {
-                if ((double)rand() / RAND_MAX < 0.05) {
-                    worldState.chunks[j].gameElements[i].elementType = 1;
-                }
+            else {
+                worldState.chunks[j].gameElements[i].elementType = 0;
             }
         }
     }
@@ -122,7 +160,6 @@ void generateWorld() {
     }
 }
 
-
 void removeWorld() {
     for (int i = 0; i < worldState.chunkCount; i++) {
         free(worldState.chunks[i].gameElements);
@@ -146,7 +183,7 @@ void drawWorld(const Frustum* frustum) {
                 getCubeAABB(basePosition, &cubeCenter, &cubeExtents);
                 
                 if (isAABBInFrustum(frustum, &cubeCenter, &cubeExtents)) {
-                    drawCube(basePosition);
+                    drawCube(basePosition, getColorByType(gameElement.elementType));
                 }
             }
         }
