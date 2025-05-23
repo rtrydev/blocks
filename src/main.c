@@ -13,7 +13,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "engine/window.h"
 #include "engine/display.h"
 #include "engine/cube.h"
-#include "engine/userinputs.h" // Added for processMouseButtonActions
+#include "engine/userinputs.h"
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -35,15 +35,6 @@ int main(int argc, char** argv) {
 
         initCubeVBOs();
 
-        // Registering callbacks from userinputs.c
-        // Note: display.c calls glfwSetKeyCallback and glfwSetCursorPosCallback
-        // We need to ensure those are called, or consolidate registration here.
-        // For now, assuming display.c's calls are sufficient for key/mouse position
-        // and we only need to add the mouse button callback here.
-        // If processDisplayLoop sets them, this might be redundant or overwritten
-        // depending on the order.
-        // Looking at display.c, it indeed sets key and cursor pos callbacks.
-        // So we just add the mouse button callback.
         glfwSetMouseButtonCallback(window, processMouseButtonActions);
 
         processDisplayLoop(window);

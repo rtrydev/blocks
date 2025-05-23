@@ -94,7 +94,7 @@ void processMouseButtonActions(GLFWwindow* window, int button, int action, int m
             if (ps.isLookingAtBlock && ps.lookingAtBlock != NULL) {
                 GameElement* targetBlock = getBlockAtGlobal(getWorldStateGlobal(), (int)ps.lookingAtBlock->x, (int)ps.lookingAtBlock->y, (int)ps.lookingAtBlock->z);
                 if (targetBlock == NULL || targetBlock->elementType == 0) {
-                    return; // Cannot place on an air block or non-solid block
+                    return;
                 }
 
                 int face = getBlockFace();
@@ -117,10 +117,10 @@ void processMouseButtonActions(GLFWwindow* window, int button, int action, int m
                     case BLOCK_FACE_BACK:   newBlockZ = targetZ - 1; break;
                     case BLOCK_FACE_RIGHT:  newBlockX = targetX + 1; break;
                     case BLOCK_FACE_LEFT:   newBlockX = targetX - 1; break;
-                    default: return; // Should not happen if face is valid and not BLOCK_FACE_NONE
+                    default: return;
                 }
 
-                int newBlockType = 1; // Place a default block type (e.g., stone)
+                int newBlockType = 1;
                 placeBlock(getWorldStateGlobal(), newBlockX, newBlockY, newBlockZ, newBlockType);
             }
         }

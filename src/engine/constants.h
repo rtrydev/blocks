@@ -26,11 +26,10 @@
 #define DEFAULT_OUTLINE_COLOR 0xA0A0A0
 #endif
 
-// Block faces
 #define BLOCK_FACE_TOP 0
 #define BLOCK_FACE_BOTTOM 1
-#define BLOCK_FACE_FRONT 2 // +Z
-#define BLOCK_FACE_BACK 3  // -Z
-#define BLOCK_FACE_RIGHT 4 // +X
-#define BLOCK_FACE_LEFT 5  // -X
-#define BLOCK_FACE_NONE -1 // If not looking at a block or error
+#define BLOCK_FACE_FRONT 2
+#define BLOCK_FACE_BACK 3
+#define BLOCK_FACE_RIGHT 4
+#define BLOCK_FACE_LEFT 5
+#define BLOCK_FACE_NONE -1

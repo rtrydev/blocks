@@ -118,17 +118,14 @@ void updateLookingAtBlock() {
             if (actualDistanceToBlockCenter <= 4.0f) {
                 currentPlayerState.isLookingAtBlock = true;
                 currentPlayerState.lookingAtBlock = (Vector3*)&block->position;
-                currentPlayerState.lookingAtBlockSurfacePoint = checkPos; // Store intersection point
+                currentPlayerState.lookingAtBlockSurfacePoint = checkPos;
             } else {
                 currentPlayerState.isLookingAtBlock = false;
                 currentPlayerState.lookingAtBlock = NULL;
-                // currentPlayerState.lookingAtBlockSurfacePoint is already zeroed out
             }
             return;
         }
     }
-    // If loop finishes, no block is found within maxDistance.
-    // isLookingAtBlock, lookingAtBlock, and lookingAtBlockSurfacePoint remain false/NULL/zeroed.
 }
 
 int getBlockFace() {
@@ -152,22 +149,21 @@ int getBlockFace() {
     float absZ = fabsf(hitNormalZ);
 
     float maxVal = absX;
-    int face = BLOCK_FACE_LEFT; // Default if X is max and negative
+    int face = BLOCK_FACE_LEFT;
     if (hitNormalX > 0) {
         face = BLOCK_FACE_RIGHT;
     }
 
     if (absY > maxVal) {
         maxVal = absY;
-        face = BLOCK_FACE_BOTTOM; // Default if Y is max and negative
+        face = BLOCK_FACE_BOTTOM;
         if (hitNormalY > 0) {
             face = BLOCK_FACE_TOP;
         }
     }
 
     if (absZ > maxVal) {
-        // maxVal = absZ; // Not needed to reassign maxVal here
-        face = BLOCK_FACE_BACK; // Default if Z is max and negative
+        face = BLOCK_FACE_BACK;
         if (hitNormalZ > 0) {
             face = BLOCK_FACE_FRONT;
         }

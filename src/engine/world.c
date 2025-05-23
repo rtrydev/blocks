@@ -45,7 +45,7 @@ void getChunksInProximity(Vector3 position, int proximity, Chunk* chunks) {
 
 void placeBlock(WorldState* ws, int x, int y, int z, int blockType) {
     if (getBlockAtGlobal(ws, x, y, z) != NULL) {
-        return; // Block already exists, cannot place
+        return;
     }
 
     Chunk* targetChunk = NULL;
@@ -72,24 +72,20 @@ void placeBlock(WorldState* ws, int x, int y, int z, int blockType) {
     }
 
     if (targetChunk == NULL) {
-        // No chunk contains the target coordinates.
-        // Optionally, log an error or handle this case if world boundaries are dynamic.
         return;
     }
 
     GameElement* newBlock = &targetChunk->gameElements[elementIndex];
     newBlock->elementType = blockType;
-    newBlock->isObstructed = false; // Obstruction status is calculated below.
+    newBlock->isObstructed = false;
     newBlock->position.x = (double)x;
     newBlock->position.y = (double)y;
     newBlock->position.z = (double)z;
 
-    // Update isObstructed status for the new block and its neighbors
     int dx[] = {-1, 1, 0, 0, 0, 0};
     int dy[] = {0, 0, -1, 1, 0, 0};
     int dz[] = {0, 0, 0, 0, -1, 1};
 
-    // Calculate obstruction for the newly placed block
     int solidNeighborCountNewBlock = 0;
     for (int i = 0; i < 6; i++) {
         GameElement* neighbor = getBlockAtGlobal(ws, x + dx[i], y + dy[i], z + dz[i]);
@@ -99,7 +95,6 @@ void placeBlock(WorldState* ws, int x, int y, int z, int blockType) {
     }
     newBlock->isObstructed = (solidNeighborCountNewBlock == 6);
 
-    // Update obstruction status for adjacent blocks
     for (int i = 0; i < 6; i++) {
         int neighborX = x + dx[i];
         int neighborY = y + dy[i];
@@ -139,7 +134,6 @@ static float valueNoise2d(float x, float z) {
 
 void generateWorld() {
     srand(123);
-    // worldState is the global instance, generateWorld populates it.
     worldState.chunks = calloc(worldState.chunkCount, sizeof(Chunk)); 
 
     for (int j = 0; j < worldState.chunkCount; j++) {
@@ -183,19 +177,17 @@ void generateWorld() {
         }
     }
 
-    // Initialize obstruction status for all blocks
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             worldState.chunks[j].gameElements[i].isObstructed = false;
         }
     }
 
-    // Calculate initial obstruction status for all blocks
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             GameElement* currentBlock = &worldState.chunks[j].gameElements[i];
 
-            if (currentBlock->elementType == 0) { // Skip air blocks
+            if (currentBlock->elementType == 0) {
                 continue;
             }
 
@@ -204,7 +196,6 @@ void generateWorld() {
             int currentY = (int)floor(currentBlock->position.y);
             int currentZ = (int)floor(currentBlock->position.z);
 
-            // Check all 6 neighbors
             if (getBlockAtGlobal(&worldState, currentX + 1, currentY, currentZ) != NULL) { solidNeighborCount++; }
             if (getBlockAtGlobal(&worldState, currentX - 1, currentY, currentZ) != NULL) { solidNeighborCount++; }
             if (getBlockAtGlobal(&worldState, currentX, currentY + 1, currentZ) != NULL) { solidNeighborCount++; }
@@ -218,7 +209,6 @@ void generateWorld() {
 }
 
 void removeWorld() {
-    // Operates on the global worldState instance.
     if (worldState.chunks != NULL) {
         for (int i = 0; i < worldState.chunkCount; i++) {
             if (worldState.chunks[i].gameElements != NULL) {
@@ -337,14 +327,12 @@ void destroyBlock(WorldState* ws, int x, int y, int z) {
     GameElement* blockToDestroy = getBlockAtGlobal(ws, x, y, z);
 
     if (blockToDestroy != NULL && blockToDestroy->elementType != 0) {
-        blockToDestroy->elementType = 0; // Mark as air
+        blockToDestroy->elementType = 0;
 
-        // Offsets to find adjacent blocks
         int dx[] = {-1, 1, 0, 0, 0, 0};
         int dy[] = {0, 0, -1, 1, 0, 0};
         int dz[] = {0, 0, 0, 0, -1, 1};
 
-        // Update obstruction status for adjacent blocks
         for (int i = 0; i < 6; i++) {
             int neighborX = x + dx[i];
             int neighborY = y + dy[i];
@@ -352,9 +340,8 @@ void destroyBlock(WorldState* ws, int x, int y, int z) {
 
             GameElement* neighborBlock = getBlockAtGlobal(ws, neighborX, neighborY, neighborZ);
 
-            if (neighborBlock != NULL && neighborBlock->elementType != 0) { // If neighbor exists and is not air
+            if (neighborBlock != NULL && neighborBlock->elementType != 0) {
                 int solidNeighborCount = 0;
-                // Check the 6 neighbors of this 'neighborBlock'
                 for (int j = 0; j < 6; j++) {
                     GameElement* nnBlock = getBlockAtGlobal(ws, neighborX + dx[j], neighborY + dy[j], neighborZ + dz[j]);
                     if (nnBlock != NULL && nnBlock->elementType != 0) {
