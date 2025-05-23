@@ -13,7 +13,7 @@
 
 static GLuint vboVertexId = 0;
 static GLuint vboColorId = 0;
-static GLuint vboOutlineColorId = 0;
+// static GLuint vboOutlineColorId = 0; // Removed as per requirement
 
 const GLfloat vertices[] =
 {
@@ -56,7 +56,7 @@ static void hexToRGB(GLuint hex, GLfloat* rgb) {
     rgb[2] = (hex & 0xFF) / 255.0f;         // Blue
 }
 
-void drawCube(Vector3 position, GLuint hexColor) {
+void drawCube(Vector3 position, GLuint hexColor, GLuint outlineHexColor) {
     GLfloat faceColors[24 * 3];
     GLfloat rgb[3];
     hexToRGB(hexColor, rgb);
@@ -81,8 +81,12 @@ void drawCube(Vector3 position, GLuint hexColor) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_QUADS, 0, 24);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboOutlineColorId);
-    glColorPointer(3, GL_FLOAT, 0, NULL);
+    // Convert outlineHexColor to RGB
+    GLfloat rgbOutline[3];
+    hexToRGB(outlineHexColor, rgbOutline);
+
+    // Set outline color
+    glColor3f(rgbOutline[0], rgbOutline[1], rgbOutline[2]);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawArrays(GL_QUADS, 0, 24);
@@ -94,13 +98,13 @@ void drawCube(Vector3 position, GLuint hexColor) {
 
 void initCubeVBOs() {
     glGenBuffers(1, &vboVertexId);
-    glGenBuffers(1, &vboOutlineColorId);
+    // glGenBuffers(1, &vboOutlineColorId); // Removed as per requirement
 
     glBindBuffer(GL_ARRAY_BUFFER, vboVertexId);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboOutlineColorId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(outlineColors), outlineColors, GL_STATIC_DRAW);
+    // glBindBuffer(GL_ARRAY_BUFFER, vboOutlineColorId); // Removed as per requirement
+    // glBufferData(GL_ARRAY_BUFFER, sizeof(outlineColors), outlineColors, GL_STATIC_DRAW); // Removed as per requirement
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
@@ -108,5 +112,5 @@ void initCubeVBOs() {
 void freeCubeVBOs() {
     glDeleteBuffers(1, &vboVertexId);
     glDeleteBuffers(1, &vboColorId);
-    glDeleteBuffers(1, &vboOutlineColorId);
+    // glDeleteBuffers(1, &vboOutlineColorId); // Removed as per requirement
 }

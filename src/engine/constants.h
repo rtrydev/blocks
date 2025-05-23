@@ -17,3 +17,11 @@
 #ifndef Y_VIEW_CLAMP
 #define Y_VIEW_CLAMP 960.0
 #endif
+
+#ifndef HIGHLIGHT_OUTLINE_COLOR
+#define HIGHLIGHT_OUTLINE_COLOR 0xFFFF00 // Yellow
+#endif
+
+#ifndef DEFAULT_OUTLINE_COLOR
+#define DEFAULT_OUTLINE_COLOR 0xCCCCCC // Light Gray
+#endif

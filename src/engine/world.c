@@ -8,6 +8,9 @@
 #include "types.h"
 #include "player.h"
 #include "frustum.h"
+
+// const GLuint HIGHLIGHTED_OUTLINE_COLOR = 0xFFFF00; // Yellow // Moved to constants.h
+// const GLuint DEFAULT_OUTLINE_COLOR = 0xCCCCCC;     // Light Gray // Moved to constants.h
 #include "constants.h"
 
 #if defined(__APPLE__)
@@ -182,9 +185,11 @@ void drawWorld(const Frustum* frustum) {
                     }
 
                     if (isHighlighted) {
-                        drawCube(basePosition, 0xFFFF00); // Bright Yellow for highlighting
+                        // drawCube(basePosition, 0xFFFF00); // Bright Yellow for highlighting
+                        drawCube(basePosition, getColorByType(gameElement.elementType), HIGHLIGHTED_OUTLINE_COLOR);
                     } else {
-                        drawCube(basePosition, getColorByType(gameElement.elementType));
+                        // drawCube(basePosition, getColorByType(gameElement.elementType));
+                        drawCube(basePosition, getColorByType(gameElement.elementType), DEFAULT_OUTLINE_COLOR);
                     }
                 }
             }
