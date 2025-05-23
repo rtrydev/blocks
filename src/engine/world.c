@@ -69,60 +69,48 @@ void generateWorld() {
             }
 
             if (x > 5 && y > 0 && z > 5) {
-                if ((double)rand() / RAND_MAX < 1.5) {
+                if ((double)rand() / RAND_MAX < 0.05) {
                     worldState.chunks[j].gameElements[i].elementType = 1;
                 }
             }
         }
     }
 
-    // Initialize isObstructed flags
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             worldState.chunks[j].gameElements[i].isObstructed = false;
         }
     }
 
-    // New occlusion logic
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             GameElement* currentBlock = &worldState.chunks[j].gameElements[i];
 
-            if (currentBlock->elementType == 0) { // Skip air blocks
+            if (currentBlock->elementType == 0) {
                 continue;
             }
 
             int solidNeighborCount = 0;
 
-            // Get integer position of currentBlock
-            // Note: Block positions are already integers effectively after generation.
-            // Using floor here ensures conversion from the stored double, though direct casting might also work
-            // if positions are guaranteed to be whole numbers. Floor is safer.
             int currentX = (int)floor(currentBlock->position.x);
             int currentY = (int)floor(currentBlock->position.y);
             int currentZ = (int)floor(currentBlock->position.z);
 
-            // Check +X neighbor
             if (getBlockAtGlobal(&worldState, currentX + 1, currentY, currentZ) != NULL) {
                 solidNeighborCount++;
             }
-            // Check -X neighbor
             if (getBlockAtGlobal(&worldState, currentX - 1, currentY, currentZ) != NULL) {
                 solidNeighborCount++;
             }
-            // Check +Y neighbor
             if (getBlockAtGlobal(&worldState, currentX, currentY + 1, currentZ) != NULL) {
                 solidNeighborCount++;
             }
-            // Check -Y neighbor
             if (getBlockAtGlobal(&worldState, currentX, currentY - 1, currentZ) != NULL) {
                 solidNeighborCount++;
             }
-            // Check +Z neighbor
             if (getBlockAtGlobal(&worldState, currentX, currentY, currentZ + 1) != NULL) {
                 solidNeighborCount++;
             }
-            // Check -Z neighbor
             if (getBlockAtGlobal(&worldState, currentX, currentY, currentZ - 1) != NULL) {
                 solidNeighborCount++;
             }
@@ -207,41 +195,28 @@ GameElement* getBlockAtGlobal(WorldState* worldState, int x, int y, int z) {
     for (int i = 0; i < worldState->chunkCount; i++) {
         Chunk* chunk = &worldState->chunks[i];
 
-        // Determine chunk boundaries using integer coordinates
         int chunk_origin_x = (int)floor(chunk->position.x);
         int chunk_origin_y = (int)floor(chunk->position.y);
         int chunk_origin_z = (int)floor(chunk->position.z);
 
-        // Check if the global coordinates are within this chunk's boundaries
         if (x >= chunk_origin_x && x < chunk_origin_x + CHUNK_SIZE &&
             y >= chunk_origin_y && y < chunk_origin_y + CHUNK_SIZE &&
             z >= chunk_origin_z && z < chunk_origin_z + CHUNK_SIZE) {
             
-            // Calculate local coordinates
             int local_x = x - chunk_origin_x;
             int local_y = y - chunk_origin_y;
             int local_z = z - chunk_origin_z;
 
-            // Calculate the index into the gameElements array
-            // No need to validate local_x, local_y, local_z here as the previous check
-            // (global coordinates within chunk boundaries) and floor usage for origin
-            // should ensure they are within [0, CHUNK_SIZE - 1].
             int index = local_x + local_y * CHUNK_SIZE + local_z * CHUNK_SIZE * CHUNK_SIZE;
-
-            // Also, no need to explicitly check if index is < CHUNK_SIZE^3, as valid local coordinates
-            // will always produce a valid index.
 
             GameElement* element = &chunk->gameElements[index];
 
             if (element->elementType != 0) {
-                return element; // Found a non-air block
+                return element;
             } else {
-                // Block is air, but coordinates are valid.
-                // Per instruction "If the coordinates do not fall within any chunk, OR if the block at those coordinates is air ... return NULL"
-                // So, if we find air, we should return NULL immediately as this is the correct block for the given x,y,z.
                 return NULL; 
             }
         }
     }
-    return NULL; // No chunk contains these coordinates, or the block found was air.
+    return NULL;
 }
