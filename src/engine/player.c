@@ -93,7 +93,7 @@ void updateLookingAtBlock() {
     const float maxDistance = 2.5f; // Max distance to check for blocks
     const float step = 0.1f;      // Step size for ray casting
 
-    for (float distance = 0.0f; distance <= maxDistance; distance += step) {
+    for (float distance = 0.5f; distance <= maxDistance; distance += step) {
         Vector3 checkPos;
         checkPos.x = rayOrigin.x + viewDirection.x * distance;
         checkPos.y = rayOrigin.y + viewDirection.y * distance;
