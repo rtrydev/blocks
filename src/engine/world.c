@@ -69,7 +69,7 @@ void generateWorld() {
             }
 
             if (x > 5 && y > 0 && z > 5) {
-                if ((double)rand() / RAND_MAX < 1.5) {
+                if ((double)rand() / RAND_MAX < 0.05) {
                     worldState.chunks[j].gameElements[i].elementType = 1;
                 }
             }
@@ -78,56 +78,46 @@ void generateWorld() {
 
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
-            GameElement gameElement = worldState.chunks[j].gameElements[i];
+            worldState.chunks[j].gameElements[i].isObstructed = false;
+        }
+    }
 
-            if (gameElement.elementType == 0) {
+    for (int j = 0; j < worldState.chunkCount; j++) {
+        for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
+            GameElement* currentBlock = &worldState.chunks[j].gameElements[i];
+
+            if (currentBlock->elementType == 0) {
                 continue;
             }
 
-            GameElement* nearGameElements = NULL;
-            Vector3 range = {
-                .x = 1.5,
-                .y = 1.5,
-                .z = 1.5
-            };
+            int solidNeighborCount = 0;
 
-            getGameElementsInProximity(gameElement.position, range, range, &nearGameElements);
+            int currentX = (int)floor(currentBlock->position.x);
+            int currentY = (int)floor(currentBlock->position.y);
+            int currentZ = (int)floor(currentBlock->position.z);
 
-            int colliders = 0;
-
-            for (int k = 0; k < 36; k++) {
-                GameElement currentElement = nearGameElements[k];
-                if (currentElement.elementType == 0) {
-                    continue;
-                }
-
-                if (fabs(gameElement.position.x - currentElement.position.x) < 0.001
-                    && fabs(gameElement.position.y - currentElement.position.y) < 0.001
-                    && fabs(fabs(gameElement.position.z - currentElement.position.z) - 1.0) < 0.001
-                ) {
-                    colliders++;
-                }
-
-                if (fabs(gameElement.position.x - currentElement.position.x) < 0.001
-                    && fabs(gameElement.position.z - currentElement.position.z) < 0.001
-                    && fabs(fabs(gameElement.position.y - currentElement.position.y) - 1.0) < 0.001
-                    ) {
-                    colliders++;
-                }
-
-                if (fabs(gameElement.position.z - currentElement.position.z) < 0.001
-                    && fabs(gameElement.position.y - currentElement.position.y) < 0.001
-                    && fabs(fabs(gameElement.position.x - currentElement.position.x) - 1.0) < 0.001
-                    ) {
-                    colliders++;
-                }
+            if (getBlockAtGlobal(&worldState, currentX + 1, currentY, currentZ) != NULL) {
+                solidNeighborCount++;
+            }
+            if (getBlockAtGlobal(&worldState, currentX - 1, currentY, currentZ) != NULL) {
+                solidNeighborCount++;
+            }
+            if (getBlockAtGlobal(&worldState, currentX, currentY + 1, currentZ) != NULL) {
+                solidNeighborCount++;
+            }
+            if (getBlockAtGlobal(&worldState, currentX, currentY - 1, currentZ) != NULL) {
+                solidNeighborCount++;
+            }
+            if (getBlockAtGlobal(&worldState, currentX, currentY, currentZ + 1) != NULL) {
+                solidNeighborCount++;
+            }
+            if (getBlockAtGlobal(&worldState, currentX, currentY, currentZ - 1) != NULL) {
+                solidNeighborCount++;
             }
 
-            if (colliders == 6) {
-                worldState.chunks[j].gameElements[i].isObstructed = true;
+            if (solidNeighborCount == 6) {
+                currentBlock->isObstructed = true;
             }
-
-            free(nearGameElements);
         }
     }
 }
@@ -199,4 +189,34 @@ void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 ran
     }
 
     free(chunksInProximity);
+}
+
+GameElement* getBlockAtGlobal(WorldState* worldState, int x, int y, int z) {
+    for (int i = 0; i < worldState->chunkCount; i++) {
+        Chunk* chunk = &worldState->chunks[i];
+
+        int chunk_origin_x = (int)floor(chunk->position.x);
+        int chunk_origin_y = (int)floor(chunk->position.y);
+        int chunk_origin_z = (int)floor(chunk->position.z);
+
+        if (x >= chunk_origin_x && x < chunk_origin_x + CHUNK_SIZE &&
+            y >= chunk_origin_y && y < chunk_origin_y + CHUNK_SIZE &&
+            z >= chunk_origin_z && z < chunk_origin_z + CHUNK_SIZE) {
+            
+            int local_x = x - chunk_origin_x;
+            int local_y = y - chunk_origin_y;
+            int local_z = z - chunk_origin_z;
+
+            int index = local_x + local_y * CHUNK_SIZE + local_z * CHUNK_SIZE * CHUNK_SIZE;
+
+            GameElement* element = &chunk->gameElements[index];
+
+            if (element->elementType != 0) {
+                return element;
+            } else {
+                return NULL; 
+            }
+        }
+    }
+    return NULL;
 }
