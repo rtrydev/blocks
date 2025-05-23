@@ -19,5 +19,6 @@ void playerFollowViewport();
 void appendPlayerForces(RelativeVector3 forces);
 void setPlayerInAirState(bool state);
 void setPlayerForces(RelativeVector3 forces);
+void drawInHandItem();
 
 #endif

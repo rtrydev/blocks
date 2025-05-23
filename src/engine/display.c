@@ -71,7 +71,14 @@ void processDisplayLoop(GLFWwindow* window) {
         Frustum viewFrustum;
         extractFrustumPlanes(&viewFrustum);
 
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+
         drawWorld(&viewFrustum);
+        drawInHandItem();
+
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         frameCount++;
         double currentTime = glfwGetTime();

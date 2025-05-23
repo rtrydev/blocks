@@ -8,6 +8,7 @@
 #include "types.h"
 #include "player.h"
 #include "frustum.h"
+#include "constants.h"
 
 #if defined(__APPLE__)
 #include <OpenGL/gl.h>
@@ -35,21 +36,6 @@ void getChunksInProximity(Vector3 position, int proximity, Chunk* chunks) {
             chunks[currentChunk++] = worldState.chunks[i];
         }
     }
-}
-
-GLint getColorByType(int type) {
-	switch (type) {
-	case 0:
-		return 0x000000;
-	case 1:
-		return 0x224422;
-	case 2:
-		return 0xE5D8A6;
-    case 3:
-		return 0x6CA0DC;
-	default:
-		return 0x000000;
-	}
 }
 
 static float valueNoise2d(float x, float z) {
@@ -168,9 +154,6 @@ void removeWorld() {
 }
 
 void drawWorld(const Frustum* frustum) {
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
-
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
             GameElement gameElement = worldState.chunks[j].gameElements[i];
@@ -188,9 +171,6 @@ void drawWorld(const Frustum* frustum) {
             }
         }
     }
-
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 rangeTo, GameElement** gameElements) {

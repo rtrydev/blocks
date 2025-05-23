@@ -35,6 +35,21 @@ const GLfloat outlineColors[] =
     1, 1, 1,   1, 1, 1,   1, 1, 1,   1, 1, 1
 };
 
+GLint getColorByType(int type) {
+    switch (type) {
+    case 0:
+        return 0x000000;
+    case 1:
+        return 0x224422;
+    case 2:
+        return 0xE5D8A6;
+    case 3:
+        return 0x6CA0DC;
+    default:
+        return 0x000000;
+    }
+}
+
 static void hexToRGB(GLuint hex, GLfloat* rgb) {
     rgb[0] = ((hex >> 16) & 0xFF) / 255.0f; // Red
     rgb[1] = ((hex >> 8) & 0xFF) / 255.0f;  // Green

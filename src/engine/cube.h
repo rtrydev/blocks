@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 
 void drawCube(Vector3 position, GLuint hexColor);
+GLint getColorByType(int type);
 
 void initCubeVBOs();
 void freeCubeVBOs();

@@ -1,5 +1,6 @@
 #include "player.h"
 #include "viewport.h"
+#include "cube.h"
 
 PlayerState currentPlayerState = {
 	.position = {
@@ -24,6 +25,22 @@ PlayerState currentPlayerState = {
 
 PlayerState getPlayerState() {
 	return currentPlayerState;
+}
+
+void drawInHandItem() {
+    glPushMatrix();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glTranslatef(0.5f, 0.0f, -0.5f);
+	glRotatef(20.0f, 0.0f, 1.0f, 0.0f);
+	glRotatef(-15.0f, 1.0f, 0.0f, 0.0f);
+    glScalef(0.6f, 0.8f, 0.8f);
+
+    drawCube((Vector3) { -0.5f, 0.0f, -0.5f }, getColorByType(1));
+
+    glPopMatrix();
 }
 
 void playerFollowViewport() {
