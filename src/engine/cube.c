@@ -81,6 +81,9 @@ void drawCube(Vector3 position, GLuint hexColor, GLuint outlineHexColor) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_QUADS, 0, 24);
 
+    // Disable color array for flat outline color
+    glDisableClientState(GL_COLOR_ARRAY); 
+
     // Convert outlineHexColor to RGB
     GLfloat rgbOutline[3];
     hexToRGB(outlineHexColor, rgbOutline);
@@ -90,6 +93,9 @@ void drawCube(Vector3 position, GLuint hexColor, GLuint outlineHexColor) {
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glDrawArrays(GL_QUADS, 0, 24);
+
+    // Re-enable color array for subsequent cube faces
+    glEnableClientState(GL_COLOR_ARRAY); 
 
     glPopMatrix();
 
