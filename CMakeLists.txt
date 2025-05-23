@@ -32,6 +32,20 @@ add_executable (
 target_include_directories("blocks" PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/include" "${CMAKE_CURRENT_SOURCE_DIR}/lib/freeglut/include")
 target_link_libraries("blocks" opengl32 glu32 "${CMAKE_CURRENT_SOURCE_DIR}/lib/glfw-3.4/lib/glfw3.lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/lib/Release/x64/glew32.lib" "${CMAKE_CURRENT_SOURCE_DIR}/lib/freeglut/lib/x64/freeglut.lib")
 
+add_custom_command(
+    TARGET "blocks" POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/glew-2.1.0/bin/Release/x64/glew32.dll"
+            "$<TARGET_FILE_DIR:blocks>/glew32.dll"
+)
+
+add_custom_command(
+    TARGET "blocks" POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_SOURCE_DIR}/lib/freeglut/bin/x64/freeglut.dll"
+            "$<TARGET_FILE_DIR:blocks>/freeglut.dll"
+)
+
 if (CMAKE_VERSION VERSION_GREATER 3.12)
   set_property(TARGET blocks PROPERTY CXX_STANDARD 20)
 endif()
