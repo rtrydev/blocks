@@ -7,6 +7,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 double startViewX = 0.0;
 double startViewY = 0.0;
@@ -17,6 +18,8 @@ double lastViewYPosition = 0.0;
 
 double currentYaw = 0.0;
 double currentPitch = 0.0;
+
+double spaceTimeout = 0.0;
 
 const double MAX_PITCH_RADIANS = (PI / 2.0) - 0.00017453292519943295;
 
@@ -30,6 +33,12 @@ InputState currentInputState = {
 
 InputState getInputState() {
     return currentInputState;
+}
+
+void processInputTick() {
+    if (spaceTimeout > 0.0) {
+		spaceTimeout -= deltaTime();
+    }
 }
 
 void processKeyboardButtonActions(GLFWwindow* window, int key, int scancode, int action, int mods) {
@@ -73,7 +82,10 @@ void processKeyboardButtonActions(GLFWwindow* window, int key, int scancode, int
         }
 
         if (key == GLFW_KEY_SPACE) {
-            currentInputState.JUMP_ACTIVE = true;
+            if (spaceTimeout <= 0.0) {
+                currentInputState.JUMP_ACTIVE = true;
+                spaceTimeout = 100.0;
+            }
         }
 
         if (key == GLFW_KEY_ESCAPE) {
@@ -121,6 +133,41 @@ void processMouseButtonActions(GLFWwindow* window, int button, int action, int m
                 }
 
                 int newBlockType = 1;
+                Vector3 position = ps.position;
+
+                bool collisionOnX = false;
+                bool collisionOnY = false;
+                bool collisionOnZ = false;
+
+                bool allignsOnX = position.x + 0.25 > newBlockX && position.x - 1.25 < newBlockX;
+                bool allignsOnY = position.y - EPSILON < newBlockY && position.y + ps.height - EPSILON > newBlockY - 1.0;
+                bool allignsOnZ = position.z + 0.25 > newBlockZ && position.z - 1.25 < newBlockZ;
+
+                if (!collisionOnX && allignsOnZ && allignsOnY
+                    && position.x + 0.25 > newBlockX && position.x - 1.25 < newBlockX
+                    ) {
+                    collisionOnX = true;
+                }
+
+                if (!collisionOnY && allignsOnX && allignsOnZ) {
+                    if (position.y < newBlockY) {
+                        collisionOnY = position.y + ps.height + EPSILON > newBlockY - 1.0;
+                    }
+                    else {
+                        collisionOnY = position.y - EPSILON < newBlockY;
+                    }
+                }
+
+                if (!collisionOnZ && allignsOnX && allignsOnY
+                    && position.z + 0.25 > newBlockZ && position.z - 1.25 < newBlockZ
+                    ) {
+                    collisionOnZ = true;
+                }
+
+                if (collisionOnX || collisionOnY || collisionOnZ) {
+                    return;
+                }
+
                 placeBlock(getWorldStateGlobal(), newBlockX, newBlockY, newBlockZ, newBlockType);
             }
         }

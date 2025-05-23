@@ -5,6 +5,7 @@
 #include "forces.h"
 #include "gametime.h"
 #include "frustum.h"
+#include "userinputs.h"
 
 #include <stdio.h>
 #include <math.h>
@@ -33,6 +34,7 @@ void processDisplayLoop(GLFWwindow* window) {
     while(!glfwWindowShouldClose(window))
     {
         processDeltaTime();
+        processInputTick();
 
         GLint windowWidth, windowHeight;
 

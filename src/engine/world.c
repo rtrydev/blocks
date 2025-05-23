@@ -8,6 +8,7 @@
 #include "types.h"
 #include "player.h"
 #include "frustum.h"
+#include <stdio.h>
 
 #include "constants.h"
 
@@ -259,38 +260,44 @@ void drawWorld(const Frustum* frustum) {
 }
 
 void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 rangeTo, GameElement** gameElements) {
-    (*gameElements) = calloc(36, sizeof(GameElement));
+    *gameElements = calloc(36, sizeof(GameElement));
 
-    int chunksInProximityCount = 8;
-    Chunk* chunksInProximity = calloc(chunksInProximityCount, sizeof(Chunk));
+    int currentGameElementIndex = 0;
+    const int maxGameElements = 36;
 
-    getChunksInProximity(position, 1, chunksInProximity);
+    double minX_bound = position.x - rangeFrom.x;
+    double maxX_bound = position.x + rangeTo.x;
+    double minY_bound = position.y - rangeFrom.y;
+    double maxY_bound = position.y + rangeTo.y;
+    double minZ_bound = position.z - rangeFrom.z;
+    double maxZ_bound = position.z + rangeTo.z;
 
-    int currentGameElement = 0;
+    int startX = (int)floor(minX_bound) + 1;
+    int endX = (int)ceil(maxX_bound) - 1;
 
-    for (int j = 0; j < chunksInProximityCount; j++) {
-        if (chunksInProximity[j].gameElements == NULL) {
-            continue;
-        }
+    int startY = (int)floor(minY_bound) + 1;
+    int endY = (int)ceil(maxY_bound) - 1;
 
-        for (size_t i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
-            int x = i % CHUNK_SIZE;
-            int y = (i / CHUNK_SIZE) % CHUNK_SIZE;
-            int z = i / (CHUNK_SIZE * CHUNK_SIZE);
+    int startZ = (int)floor(minZ_bound) + 1;
+    int endZ = (int)ceil(maxZ_bound) - 1;
 
-            Vector3 currentElementPosition = chunksInProximity[j].gameElements[i].position;
+    for (int ix = startX; ix <= endX; ++ix) {
+        for (int iy = startY; iy <= endY; ++iy) {
+            for (int iz = startZ; iz <= endZ; ++iz) {
+                if (currentGameElementIndex >= maxGameElements) {
+                    goto end_loops;
+                }
 
-            bool isNearX = currentElementPosition.x < position.x + rangeTo.x && currentElementPosition.x > position.x - rangeFrom.x;
-            bool isNearY = currentElementPosition.y < position.y + rangeTo.y && currentElementPosition.y > position.y - rangeFrom.y;
-            bool isNearZ = currentElementPosition.z < position.z + rangeTo.z && currentElementPosition.z > position.z - rangeFrom.z;
+                GameElement* foundElement = getBlockAtGlobal(&worldState, ix, iy, iz);
 
-            if (isNearX && isNearY && isNearZ) {
-                (*gameElements)[currentGameElement++] = chunksInProximity[j].gameElements[i];
+                if (foundElement != NULL) {
+                    (*gameElements)[currentGameElementIndex++] = *foundElement;
+                }
             }
         }
     }
 
-    free(chunksInProximity);
+end_loops:;
 }
 
 GameElement* getBlockAtGlobal(WorldState* worldState, int x, int y, int z) {

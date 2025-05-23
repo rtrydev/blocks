@@ -193,8 +193,8 @@ void processForces() {
             + normalizedSideway * (normalizedLookAtX * sin(PI / 2.0) + normalizedLookAtZ * cos(PI / 2.0)) * deltaTime();
     }
 
-    position.x += collisionOnX ? 0.0 : xPositionChange;
-    position.z += collisionOnZ ? 0.0 : zPositionChange;
+    position.x += collisionOnX ? (playerState.inAir ? -xPositionChange : 0.0) : xPositionChange;
+    position.z += collisionOnZ ? (playerState.inAir ? -zPositionChange : 0.0) : zPositionChange;
 
     if (playerState.inAir && position.y == previousPlayerPositionY) {
         setPlayerInAirState(false);
