@@ -51,6 +51,7 @@ void processDisplayLoop(GLFWwindow* window) {
         processForces();
 
         playerFollowViewport();
+        updateLookingAtBlock(); // Update player's looking at block state
 
         Vector3 rotation = getViewportRotation();
         Vector3 position = getViewportPosition();

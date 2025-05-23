@@ -27,5 +27,6 @@ void generateWorld();
 void removeWorld();
 void drawWorld(const Frustum* frustum);
 void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 rangeTo, GameElement** gameElements);
+WorldState* getWorldStateGlobal();
 
 #endif
