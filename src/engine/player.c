@@ -79,7 +79,7 @@ void updateLookingAtBlock() {
 
     Vector3 rayOrigin;
     rayOrigin.x = ps.position.x;
-    rayOrigin.y = ps.position.y + ps.height - 1.0f; // Adjust to eye level
+    rayOrigin.y = ps.position.y + ps.height + 0.5f;
     rayOrigin.z = ps.position.z;
 
     // Vector3 viewDirection = ps.rotation; // OLD LINE - Get rotation from player state
@@ -94,7 +94,7 @@ void updateLookingAtBlock() {
     const float maxDistance = 2.5f; // Max distance to check for blocks
     const float step = 0.1f;      // Step size for ray casting
 
-    for (float distance = 0.5f; distance <= maxDistance; distance += step) {
+    for (float distance = 0.0f; distance <= maxDistance; distance += step) {
         Vector3 checkPos;
         checkPos.x = rayOrigin.x + viewDirection.x * distance;
         checkPos.y = rayOrigin.y + viewDirection.y * distance;
