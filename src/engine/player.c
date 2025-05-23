@@ -82,7 +82,8 @@ void updateLookingAtBlock() {
     rayOrigin.y = ps.position.y + ps.height - 1.0f; // Adjust to eye level
     rayOrigin.z = ps.position.z;
 
-    Vector3 viewDirection = ps.rotation; // This is already a normalized direction vector
+    // Vector3 viewDirection = ps.rotation; // OLD LINE - Get rotation from player state
+    Vector3 viewDirection = getViewportRotation(); // NEW LINE - Get rotation directly from viewport
 
     WorldState* ws = getWorldStateGlobal();
     if (!ws) {
