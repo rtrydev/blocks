@@ -12,7 +12,7 @@
 
 static void normalizePlane(Plane* plane) {
     float mag = sqrtf(plane->x * plane->x + plane->y * plane->y + plane->z * plane->z);
-    if (mag > 0.00001f) { // Avoid division by zero or very small numbers
+    if (mag > 0.00001f) {
         plane->x /= mag;
         plane->y /= mag;
         plane->z /= mag;

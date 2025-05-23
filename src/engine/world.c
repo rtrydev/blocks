@@ -159,7 +159,7 @@ void removeWorld() {
 }
 
 void drawWorld(const Frustum* frustum) {
-    PlayerState pState = getPlayerState(); // Get current player state
+    PlayerState pState = getPlayerState();
 
     for (int j = 0; j < worldState.chunkCount; j++) {
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE; i++) {
@@ -183,13 +183,10 @@ void drawWorld(const Frustum* frustum) {
                     }
 
                     if (isHighlighted) {
-                        glLineWidth(2.0f); // Set line width for highlighted block
+                        glLineWidth(2.0f);
                         drawCube(basePosition, getColorByType(gameElement.elementType), HIGHLIGHT_OUTLINE_COLOR);
-                        glLineWidth(1.0f); // Reset line width to default
+                        glLineWidth(1.0f);
                     } else {
-                        // Ensure non-highlighted blocks are drawn with default line width
-                        // (though glLineWidth(1.0f) after highlighted block should cover this,
-                        // it's good practice if there were other paths)
                         drawCube(basePosition, getColorByType(gameElement.elementType), DEFAULT_OUTLINE_COLOR);
                     }
                 }

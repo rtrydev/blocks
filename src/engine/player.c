@@ -2,9 +2,8 @@
 #include "viewport.h"
 #include "cube.h"
 #include "world.h"
-#include "constants.h" // Added constants.h
+#include "constants.h"
 #include <math.h>
-// gametime.h is not directly needed for raycasting logic itself.
 
 PlayerState currentPlayerState = {
 	.position = {
@@ -72,9 +71,8 @@ void setPlayerInAirState(bool state) {
 }
 
 void updateLookingAtBlock() {
-    PlayerState ps = getPlayerState(); // Get a copy of current state
+    PlayerState ps = getPlayerState();
 
-    // Initialize before ray casting
     currentPlayerState.isLookingAtBlock = false;
     currentPlayerState.lookingAtBlock = NULL;
 
@@ -83,17 +81,15 @@ void updateLookingAtBlock() {
     rayOrigin.y = ps.position.y + ps.height + 0.5f;
     rayOrigin.z = ps.position.z;
 
-    // Vector3 viewDirection = ps.rotation; // OLD LINE - Get rotation from player state
-    Vector3 viewDirection = getViewportRotation(); // NEW LINE - Get rotation directly from viewport
+    Vector3 viewDirection = getViewportRotation();
 
     WorldState* ws = getWorldStateGlobal();
     if (!ws) {
-        // Cannot proceed if world state is not available
         return;
     }
 
-    const float maxDistance = 3.5f; // Max distance to check for blocks
-    const float step = 0.1f;      // Step size for ray casting
+    const float maxDistance = 3.5f;
+    const float step = 0.1f;
 
     for (float distance = 0.0f; distance <= maxDistance; distance += step) {
         Vector3 checkPos;
@@ -107,13 +103,12 @@ void updateLookingAtBlock() {
 
         GameElement* block = getBlockAtGlobal(ws, blockX, blockY, blockZ);
 
-        if (block != NULL && block->elementType != 0) { // elementType 0 is usually air
+        if (block != NULL && block->elementType != 0) {
             Vector3 blockCenter;
             blockCenter.x = block->position.x + 0.5f;
             blockCenter.y = block->position.y + 0.5f;
             blockCenter.z = block->position.z + 0.5f;
 
-            // Calculate distance from rayOrigin (eye level) to the center of the block
             float dx = blockCenter.x - rayOrigin.x;
             float dy = blockCenter.y - rayOrigin.y;
             float dz = blockCenter.z - rayOrigin.z;
@@ -121,17 +116,12 @@ void updateLookingAtBlock() {
 
             if (actualDistanceToBlockCenter <= 4.0f) {
                 currentPlayerState.isLookingAtBlock = true;
-                // Store a pointer to the block's position.
-                // This assumes GameElement's position remains valid and accessible.
                 currentPlayerState.lookingAtBlock = (Vector3*)&block->position;
             } else {
-                // First block intersected is too far.
                 currentPlayerState.isLookingAtBlock = false;
                 currentPlayerState.lookingAtBlock = NULL;
             }
-            return; // Exit after checking the first intersected block (whether near or far)
+            return;
         }
     }
-    // If loop completes, no block was found within maxDistance along the ray.
-    // isLookingAtBlock is already false, lookingAtBlock is already NULL.
 }
