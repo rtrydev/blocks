@@ -94,6 +94,7 @@ void processDisplayLoop(GLFWwindow* window) {
         setupOrthographicProjection(windowWidth, windowHeight);
 
         renderText(10.0f, windowHeight - 20.0f, fpsText, 1.0f, 1.0f, 0.0f);
+		renderText(windowWidth / 2.0f, windowHeight / 2.0f, "+", 1.0f, 1.0f, 1.0f);
 
         restorePerspectiveProjection();
 
