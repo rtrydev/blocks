@@ -19,9 +19,9 @@
 #endif
 
 #ifndef HIGHLIGHT_OUTLINE_COLOR
-#define HIGHLIGHT_OUTLINE_COLOR 0xFFFF00 // Yellow
+#define HIGHLIGHT_OUTLINE_COLOR 0xFFFFFF // White
 #endif
 
 #ifndef DEFAULT_OUTLINE_COLOR
-#define DEFAULT_OUTLINE_COLOR 0xCCCCCC // Light Gray
+#define DEFAULT_OUTLINE_COLOR 0xA0A0A0 // Darker Gray
 #endif
