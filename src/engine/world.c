@@ -8,6 +8,7 @@
 #include "types.h"
 #include "player.h"
 #include "frustum.h"
+
 #include "constants.h"
 
 #if defined(__APPLE__)
@@ -182,9 +183,14 @@ void drawWorld(const Frustum* frustum) {
                     }
 
                     if (isHighlighted) {
-                        drawCube(basePosition, 0xFFFF00); // Bright Yellow for highlighting
+                        glLineWidth(2.0f); // Set line width for highlighted block
+                        drawCube(basePosition, getColorByType(gameElement.elementType), HIGHLIGHT_OUTLINE_COLOR);
+                        glLineWidth(1.0f); // Reset line width to default
                     } else {
-                        drawCube(basePosition, getColorByType(gameElement.elementType));
+                        // Ensure non-highlighted blocks are drawn with default line width
+                        // (though glLineWidth(1.0f) after highlighted block should cover this,
+                        // it's good practice if there were other paths)
+                        drawCube(basePosition, getColorByType(gameElement.elementType), DEFAULT_OUTLINE_COLOR);
                     }
                 }
             }

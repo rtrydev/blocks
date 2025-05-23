@@ -4,7 +4,7 @@
 #include "types.h"
 #include <GL/glew.h>
 
-void drawCube(Vector3 position, GLuint hexColor);
+void drawCube(Vector3 position, GLuint hexColor, GLuint outlineHexColor);
 GLint getColorByType(int type);
 
 void initCubeVBOs();
