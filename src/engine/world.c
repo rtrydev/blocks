@@ -22,6 +22,10 @@ WorldState worldState = {
     .chunkCount = 36
 };
 
+WorldState* getWorldStateGlobal() {
+    return &worldState;
+}
+
 void getChunksInProximity(Vector3 position, int proximity, Chunk* chunks) {
     int currentChunk = 0;
 
