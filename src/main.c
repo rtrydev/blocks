@@ -33,6 +33,18 @@ int main(int argc, char** argv) {
         printf("OpenGL Version: %s\n", (const char*)glGetString(GL_VERSION));
 
         initCubeVBOs();
+
+        // Registering callbacks from userinputs.c
+        // Note: display.c calls glfwSetKeyCallback and glfwSetCursorPosCallback
+        // We need to ensure those are called, or consolidate registration here.
+        // For now, assuming display.c's calls are sufficient for key/mouse position
+        // and we only need to add the mouse button callback here.
+        // If processDisplayLoop sets them, this might be redundant or overwritten
+        // depending on the order.
+        // Looking at display.c, it indeed sets key and cursor pos callbacks.
+        // So we just add the mouse button callback.
+        glfwSetMouseButtonCallback(window, processMouseButtonActions);
+
         processDisplayLoop(window);
         freeCubeVBOs();
 

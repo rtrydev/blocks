@@ -28,5 +28,7 @@ void removeWorld();
 void drawWorld(const Frustum* frustum);
 void getGameElementsInProximity(Vector3 position, Vector3 rangeFrom, Vector3 rangeTo, GameElement** gameElements);
 WorldState* getWorldStateGlobal();
+void destroyBlock(WorldState* ws, int x, int y, int z);
+void placeBlock(WorldState* ws, int x, int y, int z, int blockType);
 
 #endif

@@ -15,7 +15,7 @@ typedef struct InputState {
 InputState getInputState();
 
 void processKeyboardButtonActions(GLFWwindow* window, int key, int scancode, int action, int mods);
-void processMouseButtonActions(GLFWwindow* window, int button, int x, int y);
+void processMouseButtonActions(GLFWwindow* window, int button, int action, int mods);
 void processMouseMoveActions(GLFWwindow* window, double x, double y);
 
 #endif

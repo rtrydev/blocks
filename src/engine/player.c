@@ -75,6 +75,7 @@ void updateLookingAtBlock() {
 
     currentPlayerState.isLookingAtBlock = false;
     currentPlayerState.lookingAtBlock = NULL;
+    currentPlayerState.lookingAtBlockSurfacePoint = (Vector3){0.0f, 0.0f, 0.0f}; // Zero out
 
     Vector3 rayOrigin;
     rayOrigin.x = ps.position.x;
@@ -117,11 +118,62 @@ void updateLookingAtBlock() {
             if (actualDistanceToBlockCenter <= 4.0f) {
                 currentPlayerState.isLookingAtBlock = true;
                 currentPlayerState.lookingAtBlock = (Vector3*)&block->position;
+                currentPlayerState.lookingAtBlockSurfacePoint = checkPos; // Store intersection point
             } else {
                 currentPlayerState.isLookingAtBlock = false;
                 currentPlayerState.lookingAtBlock = NULL;
+                // currentPlayerState.lookingAtBlockSurfacePoint is already zeroed out
             }
             return;
         }
     }
+    // If loop finishes, no block found
+    // currentPlayerState.isLookingAtBlock = false; // Already set at the beginning
+    // currentPlayerState.lookingAtBlock = NULL; // Already set at the beginning
+    // currentPlayerState.lookingAtBlockSurfacePoint is already zeroed out
+}
+
+int getBlockFace() {
+    if (!currentPlayerState.isLookingAtBlock || currentPlayerState.lookingAtBlock == NULL) {
+        return BLOCK_FACE_NONE;
+    }
+
+    Vector3 intersectionPoint = currentPlayerState.lookingAtBlockSurfacePoint;
+    Vector3 targetBlockIntegerCoordinates = *currentPlayerState.lookingAtBlock;
+
+    float blockCenterX = targetBlockIntegerCoordinates.x + 0.5f;
+    float blockCenterY = targetBlockIntegerCoordinates.y + 0.5f;
+    float blockCenterZ = targetBlockIntegerCoordinates.z + 0.5f;
+
+    float hitNormalX = intersectionPoint.x - blockCenterX;
+    float hitNormalY = intersectionPoint.y - blockCenterY;
+    float hitNormalZ = intersectionPoint.z - blockCenterZ;
+
+    float absX = fabsf(hitNormalX);
+    float absY = fabsf(hitNormalY);
+    float absZ = fabsf(hitNormalZ);
+
+    float maxVal = absX;
+    int face = BLOCK_FACE_LEFT; // Default if X is max and negative
+    if (hitNormalX > 0) {
+        face = BLOCK_FACE_RIGHT;
+    }
+
+    if (absY > maxVal) {
+        maxVal = absY;
+        face = BLOCK_FACE_BOTTOM; // Default if Y is max and negative
+        if (hitNormalY > 0) {
+            face = BLOCK_FACE_TOP;
+        }
+    }
+
+    if (absZ > maxVal) {
+        // maxVal = absZ; // Not needed to reassign maxVal here
+        face = BLOCK_FACE_BACK; // Default if Z is max and negative
+        if (hitNormalZ > 0) {
+            face = BLOCK_FACE_FRONT;
+        }
+    }
+
+    return face;
 }
