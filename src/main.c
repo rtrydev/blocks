@@ -13,6 +13,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "engine/window.h"
 #include "engine/display.h"
 #include "engine/cube.h"
+#include "engine/userinputs.h" // Added for processMouseButtonActions
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);

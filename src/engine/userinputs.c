@@ -2,9 +2,8 @@
 #include "viewport.h"
 #include "constants.h"
 #include "gametime.h"
-#include "world.h"   // Added for destroyBlock/placeBlock
-#include "player.h"  // Added for getPlayerState/getBlockFace
-// constants.h is already included above
+#include "world.h"
+#include "player.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -93,10 +92,9 @@ void processMouseButtonActions(GLFWwindow* window, int button, int action, int m
             }
         } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
             if (ps.isLookingAtBlock && ps.lookingAtBlock != NULL) {
-                // Check if the target block is not air
                 GameElement* targetBlock = getBlockAtGlobal(getWorldStateGlobal(), (int)ps.lookingAtBlock->x, (int)ps.lookingAtBlock->y, (int)ps.lookingAtBlock->z);
                 if (targetBlock == NULL || targetBlock->elementType == 0) {
-                    return; // Cannot place on an air block
+                    return; // Cannot place on an air block or non-solid block
                 }
 
                 int face = getBlockFace();
@@ -119,10 +117,10 @@ void processMouseButtonActions(GLFWwindow* window, int button, int action, int m
                     case BLOCK_FACE_BACK:   newBlockZ = targetZ - 1; break;
                     case BLOCK_FACE_RIGHT:  newBlockX = targetX + 1; break;
                     case BLOCK_FACE_LEFT:   newBlockX = targetX - 1; break;
-                    default: return; // Should not happen
+                    default: return; // Should not happen if face is valid and not BLOCK_FACE_NONE
                 }
 
-                int newBlockType = 1; // Default block type
+                int newBlockType = 1; // Place a default block type (e.g., stone)
                 placeBlock(getWorldStateGlobal(), newBlockX, newBlockY, newBlockZ, newBlockType);
             }
         }

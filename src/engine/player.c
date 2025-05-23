@@ -75,7 +75,7 @@ void updateLookingAtBlock() {
 
     currentPlayerState.isLookingAtBlock = false;
     currentPlayerState.lookingAtBlock = NULL;
-    currentPlayerState.lookingAtBlockSurfacePoint = (Vector3){0.0f, 0.0f, 0.0f}; // Zero out
+    currentPlayerState.lookingAtBlockSurfacePoint = (Vector3){0.0f, 0.0f, 0.0f};
 
     Vector3 rayOrigin;
     rayOrigin.x = ps.position.x;
@@ -127,10 +127,8 @@ void updateLookingAtBlock() {
             return;
         }
     }
-    // If loop finishes, no block found
-    // currentPlayerState.isLookingAtBlock = false; // Already set at the beginning
-    // currentPlayerState.lookingAtBlock = NULL; // Already set at the beginning
-    // currentPlayerState.lookingAtBlockSurfacePoint is already zeroed out
+    // If loop finishes, no block is found within maxDistance.
+    // isLookingAtBlock, lookingAtBlock, and lookingAtBlockSurfacePoint remain false/NULL/zeroed.
 }
 
 int getBlockFace() {

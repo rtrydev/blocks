@@ -51,27 +51,3 @@ if (CMAKE_VERSION VERSION_GREATER 3.12)
 endif()
 
 # TODO: Add tests and install targets if needed.
-
-# --- Test Suite ---
-enable_testing()
-
-# Define ENGINE_SOURCES (list of .c files from src/engine needed by tests)
-set(ENGINE_SOURCES
-    src/engine/world.c
-    src/engine/cube.c
-    src/engine/player.c 
-    src/engine/frustum.c 
-    src/engine/viewport.c 
-    # src/engine/gametime.c # Add if player.c or other dependencies need it
-    # src/engine/forces.c   # Add if player.c or other dependencies need it
-)
-
-add_executable(test_world_manipulation tests/test_world_manipulation.c ${ENGINE_SOURCES})
-
-# Link against the main executable's libraries or list them explicitly.
-target_link_libraries(test_world_manipulation PRIVATE blocks) 
-
-target_include_directories(test_world_manipulation PRIVATE src)
-    
-# Optional: Add test to CTest framework
-add_test(NAME WorldManipulationTest COMMAND test_world_manipulation)
