@@ -2,6 +2,7 @@
 #include "viewport.h"
 #include "cube.h"
 #include "world.h"
+#include "constants.h" // Added constants.h
 #include <math.h>
 // gametime.h is not directly needed for raycasting logic itself.
 
@@ -43,7 +44,7 @@ void drawInHandItem() {
 	glRotatef(-15.0f, 1.0f, 0.0f, 0.0f);
     glScalef(0.6f, 0.8f, 0.8f);
 
-    drawCube((Vector3) { -0.5f, 0.0f, -0.5f }, getColorByType(1));
+    drawCube((Vector3) { -0.5f, 0.0f, -0.5f }, getColorByType(1), DEFAULT_OUTLINE_COLOR);
 
     glPopMatrix();
 }
