@@ -2,6 +2,8 @@
 #include "viewport.h"
 #include "constants.h"
 #include "gametime.h"
+#include "world.h"
+#include "player.h"
 
 #include <math.h>
 #include <stdlib.h>
@@ -80,8 +82,49 @@ void processKeyboardButtonActions(GLFWwindow* window, int key, int scancode, int
     }
 }
 
-void processMouseButtonActions(GLFWwindow* window, int button, int x, int y) {
+void processMouseButtonActions(GLFWwindow* window, int button, int action, int mods) {
+    if (action == GLFW_PRESS) {
+        PlayerState ps = getPlayerState();
 
+        if (button == GLFW_MOUSE_BUTTON_LEFT) {
+            if (ps.isLookingAtBlock && ps.lookingAtBlock != NULL) {
+                destroyBlock(getWorldStateGlobal(), (int)ps.lookingAtBlock->x, (int)ps.lookingAtBlock->y, (int)ps.lookingAtBlock->z);
+            }
+        } else if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            if (ps.isLookingAtBlock && ps.lookingAtBlock != NULL) {
+                GameElement* targetBlock = getBlockAtGlobal(getWorldStateGlobal(), (int)ps.lookingAtBlock->x, (int)ps.lookingAtBlock->y, (int)ps.lookingAtBlock->z);
+                if (targetBlock == NULL || targetBlock->elementType == 0) {
+                    return;
+                }
+
+                int face = getBlockFace();
+                if (face == BLOCK_FACE_NONE) {
+                    return;
+                }
+
+                int targetX = (int)ps.lookingAtBlock->x;
+                int targetY = (int)ps.lookingAtBlock->y;
+                int targetZ = (int)ps.lookingAtBlock->z;
+
+                int newBlockX = targetX;
+                int newBlockY = targetY;
+                int newBlockZ = targetZ;
+
+                switch (face) {
+                    case BLOCK_FACE_TOP:    newBlockY = targetY + 1; break;
+                    case BLOCK_FACE_BOTTOM: newBlockY = targetY - 1; break;
+                    case BLOCK_FACE_FRONT:  newBlockZ = targetZ + 1; break;
+                    case BLOCK_FACE_BACK:   newBlockZ = targetZ - 1; break;
+                    case BLOCK_FACE_RIGHT:  newBlockX = targetX + 1; break;
+                    case BLOCK_FACE_LEFT:   newBlockX = targetX - 1; break;
+                    default: return;
+                }
+
+                int newBlockType = 1;
+                placeBlock(getWorldStateGlobal(), newBlockX, newBlockY, newBlockZ, newBlockType);
+            }
+        }
+    }
 }
 
 void processMouseMoveActions(GLFWwindow* window, double x, double y) {

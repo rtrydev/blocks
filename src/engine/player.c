@@ -75,6 +75,7 @@ void updateLookingAtBlock() {
 
     currentPlayerState.isLookingAtBlock = false;
     currentPlayerState.lookingAtBlock = NULL;
+    currentPlayerState.lookingAtBlockSurfacePoint = (Vector3){0.0f, 0.0f, 0.0f};
 
     Vector3 rayOrigin;
     rayOrigin.x = ps.position.x;
@@ -117,6 +118,7 @@ void updateLookingAtBlock() {
             if (actualDistanceToBlockCenter <= 4.0f) {
                 currentPlayerState.isLookingAtBlock = true;
                 currentPlayerState.lookingAtBlock = (Vector3*)&block->position;
+                currentPlayerState.lookingAtBlockSurfacePoint = checkPos;
             } else {
                 currentPlayerState.isLookingAtBlock = false;
                 currentPlayerState.lookingAtBlock = NULL;
@@ -124,4 +126,48 @@ void updateLookingAtBlock() {
             return;
         }
     }
+}
+
+int getBlockFace() {
+    if (!currentPlayerState.isLookingAtBlock || currentPlayerState.lookingAtBlock == NULL) {
+        return BLOCK_FACE_NONE;
+    }
+
+    Vector3 intersectionPoint = currentPlayerState.lookingAtBlockSurfacePoint;
+    Vector3 targetBlockIntegerCoordinates = *currentPlayerState.lookingAtBlock;
+
+    float blockCenterX = targetBlockIntegerCoordinates.x + 0.5f;
+    float blockCenterY = targetBlockIntegerCoordinates.y + 0.5f;
+    float blockCenterZ = targetBlockIntegerCoordinates.z + 0.5f;
+
+    float hitNormalX = intersectionPoint.x - blockCenterX;
+    float hitNormalY = intersectionPoint.y - blockCenterY;
+    float hitNormalZ = intersectionPoint.z - blockCenterZ;
+
+    float absX = fabsf(hitNormalX);
+    float absY = fabsf(hitNormalY);
+    float absZ = fabsf(hitNormalZ);
+
+    float maxVal = absX;
+    int face = BLOCK_FACE_LEFT;
+    if (hitNormalX > 0) {
+        face = BLOCK_FACE_RIGHT;
+    }
+
+    if (absY > maxVal) {
+        maxVal = absY;
+        face = BLOCK_FACE_BOTTOM;
+        if (hitNormalY > 0) {
+            face = BLOCK_FACE_TOP;
+        }
+    }
+
+    if (absZ > maxVal) {
+        face = BLOCK_FACE_BACK;
+        if (hitNormalZ > 0) {
+            face = BLOCK_FACE_FRONT;
+        }
+    }
+
+    return face;
 }

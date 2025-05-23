@@ -13,6 +13,7 @@ __declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;
 #include "engine/window.h"
 #include "engine/display.h"
 #include "engine/cube.h"
+#include "engine/userinputs.h"
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -33,6 +34,9 @@ int main(int argc, char** argv) {
         printf("OpenGL Version: %s\n", (const char*)glGetString(GL_VERSION));
 
         initCubeVBOs();
+
+        glfwSetMouseButtonCallback(window, processMouseButtonActions);
+
         processDisplayLoop(window);
         freeCubeVBOs();
 

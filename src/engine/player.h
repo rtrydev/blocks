@@ -14,6 +14,7 @@ typedef struct PlayerState {
 	bool inAir;
 	Vector3* lookingAtBlock;
 	bool isLookingAtBlock;
+	Vector3 lookingAtBlockSurfacePoint;
 } PlayerState;
 
 PlayerState getPlayerState();
@@ -23,5 +24,6 @@ void setPlayerInAirState(bool state);
 void setPlayerForces(RelativeVector3 forces);
 void drawInHandItem();
 void updateLookingAtBlock();
+int getBlockFace();
 
 #endif
