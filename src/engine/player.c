@@ -91,7 +91,7 @@ void updateLookingAtBlock() {
         return;
     }
 
-    const float maxDistance = 2.5f; // Max distance to check for blocks
+    const float maxDistance = 3.5f; // Max distance to check for blocks
     const float step = 0.1f;      // Step size for ray casting
 
     for (float distance = 0.0f; distance <= maxDistance; distance += step) {
@@ -118,7 +118,7 @@ void updateLookingAtBlock() {
             float dz = blockCenter.z - rayOrigin.z;
             float actualDistanceToBlockCenter = sqrtf(dx*dx + dy*dy + dz*dz);
 
-            if (actualDistanceToBlockCenter <= 2.0f) {
+            if (actualDistanceToBlockCenter <= 4.0f) {
                 currentPlayerState.isLookingAtBlock = true;
                 // Store a pointer to the block's position.
                 // This assumes GameElement's position remains valid and accessible.
